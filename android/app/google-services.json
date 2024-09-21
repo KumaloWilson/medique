@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "604009739638",
+    "project_id": "mediquefinaleai",
+    "storage_bucket": "mediquefinaleai.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:604009739638:android:bd1595a04dae2a6ca3f657",
+        "android_client_info": {
+          "package_name": "com.watkaydevs.medique.ai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_mJH01RFe7876ptSwWNZYwn0_gaq0dDc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
