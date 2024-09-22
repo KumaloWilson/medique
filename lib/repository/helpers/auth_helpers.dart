@@ -107,8 +107,6 @@ class AuthHelpers {
       } else {
         if (Get.isDialogOpen!) Get.back();
 
-        // Show success snackbar
-
         CustomSnackBar.showSuccessSnackbar(message: 'Login Successful',);
         Get.offAllNamed(RoutesHelper.initialScreen);
       }

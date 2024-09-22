@@ -1,14 +1,8 @@
-import 'package:MediGuideAI/views/doctor_module/tabs/home_tab/ai_hub/symptom_checker.dart';
-import 'package:MediGuideAI/views/doctor_module/tabs/home_tab/ai_hub/xray_scanner.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-import '../../../../../constant/colors.dart';
-import '../../../../../helpers/helpers/genenal_helpers.dart';
-import '../../../../../utils/asset_utils/image_assets.dart';
-import '../../../../custom_animations/leftbounce_animation.dart';
-import '../../../../custom_animations/rightbounce_animation.dart';
-import '../../../../universal_screens/medical_chatbot/medical_chatbot.dart';
+import 'package:medique/core/constants/local_image_constants.dart';
+import '../../../../animations/leftbounce_animation.dart';
+import '../../../../animations/rightbounce_animation.dart';
+import '../../../../core/constants/color_constants.dart';
 
 class AIHub extends StatefulWidget {
   const AIHub({super.key});
@@ -71,7 +65,7 @@ class _AIHubState extends State<AIHub> {
                     delay: 1.5,
                     child: GestureDetector(
                       onTap: () {
-                        Helpers.temporaryNavigator(context, const AskMediGuideScreen());
+                        //Helpers.temporaryNavigator(context, const AskMediGuideScreen());
                       },
                       child: Container(
                         padding: const EdgeInsets.all(12),
@@ -81,12 +75,12 @@ class _AIHubState extends State<AIHub> {
                         child: Column(
                           children: [
                             Image.asset(
-                              MyImageLocalAssets.chatBot,
+                              LocalImageConstants.chatBot,
                               height: 120,
                             ),
                             Text(
                               'Medical\nChatbot',
-                              style: GoogleFonts.poppins(
+                              style: TextStyle(
                                 color: Pallete.primaryColor,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -105,7 +99,7 @@ class _AIHubState extends State<AIHub> {
                     delay: 1.5,
                     child: GestureDetector(
                       onTap: () {
-                        Helpers.temporaryNavigator(context, const XrayScanner());
+                        //Helpers.temporaryNavigator(context, const XrayScanner());
                       },
                       child: Container(
                         padding: const EdgeInsets.all(12),
@@ -115,12 +109,12 @@ class _AIHubState extends State<AIHub> {
                         child: Column(
                           children: [
                             Image.asset(
-                              MyImageLocalAssets.xRayScanner,
+                              LocalImageConstants.xRayScanner,
                               height: 120,
                             ),
                             Text(
                               'TB Xray\nScanner',
-                              style: GoogleFonts.poppins(
+                              style: TextStyle(
                                 color: Pallete.primaryColor,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -143,7 +137,7 @@ class _AIHubState extends State<AIHub> {
                     delay: 2,
                     child: GestureDetector(
                       onTap: (){
-                        Helpers.temporaryNavigator(context, const SymptomChecker());
+                        //Helpers.temporaryNavigator(context, const SymptomChecker());
                       },
                       child: Container(
                         padding: const EdgeInsets.all(12),
@@ -153,12 +147,12 @@ class _AIHubState extends State<AIHub> {
                         child: Column(
                           children: [
                             Image.asset(
-                              MyImageLocalAssets.symptomChecker,
+                              LocalImageConstants.symptomChecker,
                               height: 100,
                             ),
                             Text(
                               'Symptom\nChecker',
-                              style: GoogleFonts.poppins(
+                              style: TextStyle(
                                 color: Pallete.primaryColor,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -183,12 +177,12 @@ class _AIHubState extends State<AIHub> {
                       child: Column(
                         children: [
                           Image.asset(
-                            MyImageLocalAssets.chatBot,
+                            LocalImageConstants.chatBot,
                             height: 120,
                           ),
                           Text(
                             'Patient Charts',
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(
                               color: Pallete.primaryColor,
                               fontWeight: FontWeight.bold,
                             ),

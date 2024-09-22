@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:medique/core/constants/local_image_constants.dart';
+import 'package:medique/core/utils/routes.dart';
 
 import '../../../animations/fade_in_animation.dart';
 import '../../../animations/leftbounce_animation.dart';
@@ -17,7 +19,6 @@ class DoctorHomeScreen extends StatefulWidget {
 }
 
 class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
-
   final user = FirebaseAuth.instance.currentUser;
 
   @override
@@ -71,8 +72,8 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
               child: Container(
                 decoration: const BoxDecoration(
                     color: Pallete.primaryColor,
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(40))),
+                    borderRadius:
+                        BorderRadius.only(bottomLeft: Radius.circular(40))),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -92,7 +93,8 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(30.0),
-                              borderSide: const BorderSide(color: Pallete.primaryColor),
+                              borderSide:
+                                  const BorderSide(color: Pallete.primaryColor),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(30.0),
@@ -114,15 +116,13 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                 ),
               ),
             ),
-          )
-      ),
+          )),
       body: Container(
         decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(topRight: Radius.circular(30))),
         padding: const EdgeInsets.all(16.0),
         child: ListView(children: [
-
           Row(
             children: [
               Expanded(
@@ -130,11 +130,8 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                   delay: 1.5,
                   child: GestureDetector(
                     onTap: () {
-                      // Navigator.of(context).push(
-                      //   MaterialPageRoute(
-                      //     builder: (context) => const PatientsScreen(),
-                      //   ),
-                      // );
+                      Get.toNamed(RoutesHelper.nurseAddPatientScreen,
+                          arguments: user);
                     },
                     child: Container(
                       padding: const EdgeInsets.all(12),
@@ -144,7 +141,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                       child: Column(
                         children: [
                           Image.asset(
-                            LocalImageConstants.patientBed,
+                            LocalImageConstants.addPatients,
                             height: 120,
                           ),
                           const Text(
@@ -168,7 +165,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                   delay: 1.5,
                   child: GestureDetector(
                     onTap: () {
-                      //Helpers.temporaryNavigator(context, const AIHub());
+                      Get.toNamed(RoutesHelper.viewAllPatientsScreen);
                     },
                     child: Container(
                       padding: const EdgeInsets.all(12),
@@ -178,11 +175,11 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                       child: Column(
                         children: [
                           Image.asset(
-                            LocalImageConstants.aiHub,
+                            LocalImageConstants.patientBed,
                             height: 120,
                           ),
                           const Text(
-                            'AI Hub',
+                            'View Patients',
                             style: TextStyle(
                               color: Pallete.primaryColor,
                               fontWeight: FontWeight.bold,
@@ -281,9 +278,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                 child: BounceFromRightAnimation(
                   delay: 2,
                   child: GestureDetector(
-                    onTap: (){
-
-                    },
+                    onTap: () {},
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(

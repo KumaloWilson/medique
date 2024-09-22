@@ -1,4 +1,3 @@
-
 class PatientPersonalDetails {
   String? displayPicture;
   String? occupation;
@@ -68,5 +67,40 @@ class PatientPersonalDetails {
       'email': email,
       'last-name': lastName,
     };
+  }
+
+  // copyWith method to create a copy with optional new values for some fields
+  PatientPersonalDetails copyWith({
+    String? displayPicture,
+    String? occupation,
+    String? address,
+    String? registrationDate,
+    String? gender,
+    String? patientId,
+    String? title,
+    String? firstName,
+    String? nationalId,
+    String? phoneNumber,
+    String? dateOfBirth,
+    String? maritalStatus,
+    String? email,
+    String? lastName,
+  }) {
+    return PatientPersonalDetails(
+      displayPicture: displayPicture ?? this.displayPicture,
+      occupation: occupation ?? this.occupation,
+      address: address ?? this.address,
+      registrationDate: registrationDate ?? this.registrationDate,
+      gender: gender ?? this.gender,
+      patientId: patientId ?? this.patientId,
+      title: title ?? this.title,
+      firstName: firstName ?? this.firstName,
+      nationalId: nationalId ?? this.nationalId,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      maritalStatus: maritalStatus ?? this.maritalStatus,
+      email: email ?? this.email,
+      lastName: lastName ?? this.lastName,
+    );
   }
 }

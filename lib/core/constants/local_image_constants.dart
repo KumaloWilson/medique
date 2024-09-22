@@ -1,5 +1,5 @@
 class LocalImageConstants {
-  static const String addUser = 'assets/images/add_user.png';
+  static const String addPatients = 'assets/images/add_patient.png';
   static String electrocardiogram = 'assets/images/electrocardiogram.png';
   static String patientBed = 'assets/images/patient.png';
   static String appointment = 'assets/images/appointment.png';
@@ -18,13 +18,15 @@ class LocalImageConstants {
   static String drugs = 'assets/images/drugs.png';
   static String googleIcon = 'assets/images/google_icon.png';
   static String vehicles = 'assets/images/vehicles.png';
-  static String thankYouImg = 'assets/images/7376683-black-and-white-capsules.jpg';
+  static String thankYouImg =
+      'assets/images/7376683-black-and-white-capsules.jpg';
   static String brokenImg = 'assets/images/broken_img.png';
   static String creditCardImg = 'assets/images/credit_card.png';
   static String paypalImg = 'assets/images/paypal.png';
   static String xRayScanner = 'assets/images/xrayscanner.png';
   static String deliveryVanImg = 'assets/images/delivery_van.png';
-  static String applicationSuccessful = 'assets/images/application_successful_img.png';
+  static String applicationSuccessful =
+      'assets/images/application_successful_img.png';
   static String shippingAddressImg = 'assets/images/shippingAddressImg.png';
   static String orderNotesImg = 'assets/images/orderNotesImg.png';
   static String orderAddressImg = 'assets/images/orderAddressImg.png';

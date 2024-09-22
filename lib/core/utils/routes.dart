@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:medique/models/patient_personal_details.dart';
+import 'package:medique/views/my_patients/add_patient.dart';
+import 'package:medique/views/my_patients/next_of_kin_form.dart';
 import '../../views/auth/email_verification.dart';
 import '../../views/auth/email_verification_success.dart';
 import '../../views/auth/forgot_password.dart';
@@ -21,12 +24,12 @@ class RoutesHelper {
   static String userHomeScreen = '/userHome';
   static String adminStaffStatsScreen = '/adminStaffStats';
   static String adminShiftStatsScreen = '/adminShiftStats';
-  static String adminAddUserScreen = '/addUser';
+  static String nurseAddPatientScreen = '/addPatient';
   static String viewUserScreen = '/viewUsers';
   static String userProfileScreen = '/profile';
   static String updateShiftScreen = '/updateShift';
-  static String addShiftsScreen = '/addShift';
-  static String addUserFeedbackScreen = '/addFeedback';
+  static String nextOfKinDetailsScreen = '/addNextOfKin';
+  static String viewAllPatientsScreen = '/viewPatients';
 
   static List<GetPage> routes = [
     GetPage(
@@ -49,5 +52,22 @@ class RoutesHelper {
         page: () => const AccountVerificationSuccessful()),
     GetPage(name: forgotPasswordScreen, page: () => ForgotPasswordScreen()),
     GetPage(name: splashScreen, page: () => const SplashScreen()),
+    GetPage(
+        name: nurseAddPatientScreen,
+        page: () {
+          final user = Get.arguments as User;
+          return AddPatient(user: user);
+        }
+    ),
+    GetPage(
+        name: nextOfKinDetailsScreen,
+        page: () {
+          final args = Get.arguments as List;
+          final user = args[0] as User;
+          final PatientPersonalDetails patientPersonalDetails = args[1] as PatientPersonalDetails;
+
+          return AddNextOfKin(user: user, patientPersonalDetails: patientPersonalDetails);
+        }
+    ),
   ];
 }
