@@ -1,40 +1,18 @@
-import 'package:MediGuideAI/models/patient.dart';
-import 'package:MediGuideAI/services/vitals/vital_services.dart';
-import 'package:MediGuideAI/views/widgets/vitals_card.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:provider/provider.dart';
-import '../../../constant/colors.dart';
-import '../../../models/vitals.dart';
-import '../../widgets/network_error.dart';
+import '../../core/constants/color_constants.dart';
+import '../../models/patient.dart';
+import '../../models/vitals.dart';
+import '../../services/vital_services.dart';
+import '../../widgets/cards/vitals_card.dart';
 
 class ViewPatientVitalsHistory extends StatefulWidget {
   final Patient patient;
   const ViewPatientVitalsHistory({super.key, required this.patient});
 
-  State<ViewPatientVitalsHistory> createState() => _ViewAppointmentsState();
+  State<ViewPatientVitalsHistory> createState() => _ViewPatientVitalsHistoryState();
 }
 
-class _ViewAppointmentsState extends State<ViewPatientVitalsHistory> with SingleTickerProviderStateMixin {
-
-
-  final PagingController<int, Vitals> _vitalsPagingController = PagingController(firstPageKey: 1);
-
-
-  @override
-  void initState() {
-    super.initState();
-    _vitalsPagingController.addPageRequestListener((pageKey) {
-      VitalServices.getVitalsByPatientEmail(
-          email: widget.patient.personalDetails!.email!,
-          pageSize: 5,
-          pageKey: pageKey,
-          pagingController: _vitalsPagingController
-      );
-    });
-  }
-
+class _ViewPatientVitalsHistoryState extends State<ViewPatientVitalsHistory> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +34,7 @@ class _ViewAppointmentsState extends State<ViewPatientVitalsHistory> with Single
                   color: Pallete.primaryColor,
                   borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(40))),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(
@@ -69,24 +47,38 @@ class _ViewAppointmentsState extends State<ViewPatientVitalsHistory> with Single
         ),
       ),
       body: Container(
-          decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(topRight: Radius.circular(30))
-          ),
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: PagedListView<int,   Vitals>(
-              pagingController: _vitalsPagingController,
-              builderDelegate: PagedChildBuilderDelegate<Vitals>(
-                itemBuilder: (context, vitals, index) {
-                  return VitalsCard(vitals: vitals);
-                },
-                firstPageErrorIndicatorBuilder: (_) =>
-                    NetworkError(onTap: () {}),
-                animateTransitions: true,
-              ),
+        decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(topRight: Radius.circular(30))
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: StreamBuilder<List<Vitals>>(
+            stream: VitalsServices.streamAllVitals(
+              patientEmail: widget.patient.personalDetails!.email!,
             ),
-          )
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              }
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(child: Text('No vitals found.'));
+              }
+
+              final vitalsList = snapshot.data!;
+
+              return ListView.builder(
+                itemCount: vitalsList.length,
+                itemBuilder: (context, index) {
+                  return VitalsCard(vitals: vitalsList[index]);
+                },
+              );
+            },
+          ),
+        ),
       ),
     );
   }

@@ -67,7 +67,6 @@ class AddPatientHelper{
       RoutesHelper.nextOfKinDetailsScreen,
       arguments: [user, patientPersonalDetails]
     );
-
   }
 
   static void validateAndSubmitPatientData({required String addedBy, required PatientPersonalDetails patientPersonalDetails, required NextOfKinDetails nextOfKinDetails}) async{
@@ -96,8 +95,12 @@ class AddPatientHelper{
       barrierDismissible: false,
     );
 
+    final updatedPatientDeatils = patientPersonalDetails.copyWith(
+      patientId: _autoGenID()
+    );
+
     final patient = Patient(
-      id: _autoGenID(),
+      id: updatedPatientDeatils.patientId,
       nextOfKinDetails: nextOfKinDetails,
       personalDetails: patientPersonalDetails,
       status: 'admitted'
@@ -138,4 +141,20 @@ class AddPatientHelper{
     return picked;
   }
 
+  static int calculateAge(String stringBirthDate) {
+    // Parse the provided string into a DateTime object
+    DateTime birthDate = DateTime.parse(stringBirthDate);
+    DateTime currentDate = DateTime.now();
+
+    // Calculate the initial age based on the year difference
+    int age = currentDate.year - birthDate.year;
+
+    // Check if the birthday has occurred yet this year; if not, subtract 1 from the age
+    if (currentDate.month < birthDate.month ||
+        (currentDate.month == birthDate.month && currentDate.day < birthDate.day)) {
+      age--;
+    }
+
+    return age;
+  }
 }

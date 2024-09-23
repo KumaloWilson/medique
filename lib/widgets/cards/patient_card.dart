@@ -1,6 +1,9 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:medique/core/utils/routes.dart';
+import 'package:medique/repository/helpers/add_patinet_helper.dart';
 
 import '../../models/patient.dart';
 
@@ -9,35 +12,12 @@ class PatientCard extends StatelessWidget {
   final Patient patient;
   const PatientCard({super.key, required this.patient, this.marginRight});
 
-  int calculateAge(String stringBirthDate) {
-    // Split the date string into day, month, and year components
-    List<String> dateComponents = stringBirthDate.split("-");
-    int day = int.parse(dateComponents[0]);
-    int month = int.parse(dateComponents[1]);
-    int year = int.parse(dateComponents[2]);
-
-    // Construct a new date string in the format "YYYY-MM-DD" (ISO 8601)
-    String isoDateString = "$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}";
-
-    // Parse the ISO date string into a DateTime object
-    DateTime birthDate = DateTime.parse(isoDateString);
-    DateTime currentDate = DateTime.now();
-    int age = currentDate.year - birthDate.year;
-
-    // Check if the birthday has occurred this year
-    if (currentDate.month < birthDate.month ||
-        (currentDate.month == birthDate.month && currentDate.day < birthDate.day)) {
-      age--;
-    }
-
-    return age;
-  }
 
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      //onTap: ()=> Helpers.temporaryNavigator(context, PatientDetailsScreen(patient: patient,)),
+      onTap: ()=> Get.toNamed(RoutesHelper.viewPatientScreen, arguments: patient),
       child: Container(
         margin: EdgeInsets.only(right: marginRight ?? 20, bottom: 10, top: 2),
         width: 150,
@@ -61,7 +41,7 @@ class PatientCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: 100,
+              height: 120,
               width: double.maxFinite,
               decoration: BoxDecoration(
                   color: Colors.grey.shade200,
@@ -83,7 +63,7 @@ class PatientCard extends StatelessWidget {
                 children: [
                   Text(
                     '${patient.personalDetails!.firstName} ${patient.personalDetails!.lastName}',
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold
                     ),
@@ -93,7 +73,7 @@ class PatientCard extends StatelessWidget {
                   ),
                   Text(
                     patient.status ?? 'Unknown',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   const SizedBox(
                     height: 4,
@@ -107,13 +87,12 @@ class PatientCard extends StatelessWidget {
                   ),
 
                   Text(
-                    '\n${calculateAge(patient.personalDetails!.dateOfBirth!)} years',
+                    '${AddPatientHelper.calculateAge(patient.personalDetails!.dateOfBirth!)} years',
                     style: TextStyle(
                           color: Colors.grey.shade600,
                           fontWeight: FontWeight.bold,
                           fontSize: 13)
                   )
-
                 ],
               ),
             ),

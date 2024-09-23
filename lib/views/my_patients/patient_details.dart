@@ -1,8 +1,12 @@
-import 'dart:math';
-import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
+import 'package:medique/core/constants/network_image_constants.dart';
+import 'package:medique/core/utils/routes.dart';
+import '../../core/constants/color_constants.dart';
+import '../../models/patient.dart';
+import '../../repository/helpers/add_patinet_helper.dart';
 
 class PatientDetailsScreen extends StatefulWidget {
   final Patient patient;
@@ -13,19 +17,7 @@ class PatientDetailsScreen extends StatefulWidget {
 }
 
 class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
-
   final user = FirebaseAuth.instance.currentUser;
-  late UserProfileProvider userProfileProvider;
-  late DoctorUserProfile? _userProfile;
-
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    userProfileProvider = Provider.of<UserProfileProvider>(context, listen: false);
-    _loadUserProfile();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,43 +31,49 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
             onSelected: (value) {
               switch (value) {
                 case 0:
-                  Helpers.temporaryNavigator(context, PrescribeMedicine(patient: widget.patient,));
+                  Get.toNamed(RoutesHelper.addVitalsScreen, arguments: [user, widget.patient]);
                   break;
                 case 1:
-                // Perform action for option 1
-                  print('Option 1 selected');
+                  //Helpers.temporaryNavigator(context, PrescribeMedicine(patient: widget.patient,));
                   break;
-
                 case 2:
-                // Perform action for option 1
-                  Helpers.temporaryNavigator(context, ViewPatientVitalsHistory(patient: widget.patient,));
+                  Get.toNamed(RoutesHelper.askMediguideScreen);
                   break;
 
                 case 3:
+                  Get.toNamed(RoutesHelper.viewPatientVitalsHistory, arguments: widget.patient);
+                  break;
+
+                case 4:
                 // Perform action for option 1
-                  Helpers.temporaryNavigator(context, PatientMedicalHistory(patient: widget.patient,));
+                  //Helpers.temporaryNavigator(context, PatientMedicalHistory(patient: widget.patient,));
                   break;
               }
             },
             itemBuilder: (context) => [
               const PopupMenuItem(
                 value: 0,
-                child: Text('Prescribe Medicine'),
+                child: Text('Add Vitals', style: TextStyle(fontSize: 14),),
               ),
 
               const PopupMenuItem(
                 value: 1,
-                child: Text('Book Appointment'),
+                child: Text('Prescribe Medicine', style: TextStyle(fontSize: 14),),
               ),
 
               const PopupMenuItem(
                 value: 2,
-                child: Text('Vitals History'),
+                child: Text('Ask MediGuide', style: TextStyle(fontSize: 14),),
               ),
 
               const PopupMenuItem(
                 value: 3,
-                child: Text('Medical History'),
+                child: Text('Vitals History', style: TextStyle(fontSize: 14),),
+              ),
+
+              const PopupMenuItem(
+                value: 4,
+                child: Text('Medical History', style: TextStyle(fontSize: 14),),
               ),
 
             ],
@@ -93,7 +91,9 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                   color: Colors.white,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 24),
+                       horizontal: 16,
+                       vertical: 24
+                    ),
                     height: 350,
                     decoration: BoxDecoration(
                         color: Colors.grey.shade300,
@@ -122,7 +122,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                               ),
                               child: Text(
                                 widget.patient.personalDetails!.gender ?? '',
-                                style: GoogleFonts.akayaKanadaka(
+                                style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w500,
                                     fontSize: 12),
@@ -144,7 +144,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                           height: 12,
                         ),
                         Text(
-                          widget.patient.personalDetails!.gender!,
+                            '${AddPatientHelper.calculateAge(widget.patient.personalDetails!.dateOfBirth!)} years',
                           style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -154,42 +154,6 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                         const SizedBox(
                           height: 12,
                         ),
-                        Row(
-                          children: [
-                            GestureDetector(
-                                onTap: () {
-                                  //TODO : //IMPLEMENT A FUNCTION TO CREATE A CHAT USING THE DOCTORS EMAIL. PLEASE REFER TO THE CODE ON THE CHAT SCREEN AND SEE HOW THE CHAT IS CREATED, USE A SIMILAR METHOD BY PARSING THE DOCTOR'S EMAIL ADDRESS. PLEASE TAKE NOTE THAT THIS WILL ONLY APPLY TO DOCTOR'S EMAIL THAT ARE REGISTER ON FIREBASE ONLY OTHERWISE THE CODE WILL PRODUCE AN ERROR
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 8),
-                                  decoration: BoxDecoration(
-                                      color: Pallete.primaryColor,
-                                      borderRadius: BorderRadius.circular(10)),
-                                  child: Row(
-                                    children: [
-                                      const Icon(
-                                        FontAwesomeIcons.message,
-                                        size: 16,
-                                        color: Colors.white,
-                                      ),
-                                      const SizedBox(
-                                        width: 8,
-                                      ),
-                                      Text(
-                                        'Chat',
-                                        style: GoogleFonts.roboto(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 14),
-                                      ),
-                                    ],
-                                  ),
-                                ).animate().slideX(
-                                    begin: -10,
-                                    duration: const Duration(seconds: 2))),
-                          ],
-                        )
                       ],
                     ),
                   ),
@@ -206,9 +170,9 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                       const SizedBox(
                         height: 20,
                       ),
-                      Text(
+                      const Text(
                         'About',
-                        style: GoogleFonts.roboto(
+                        style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,
                           fontWeight: FontWeight.bold
@@ -227,11 +191,10 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                         ),
                         child: Column(
                           children: [
-                            Text(
+                            const Text(
                               'Contact Details',
-                              style: GoogleFonts.roboto(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
-
                               ),
                             ),
                             const SizedBox(
@@ -244,13 +207,15 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                                   "Email",
                                   style: TextStyle(
                                       color: Colors.grey.shade600,
-                                      fontWeight: FontWeight.bold
+                                      fontWeight: FontWeight.bold,
+                                    fontSize: 14
                                   ),
                                 ),
                                 Text(
                                   widget.patient.personalDetails!.email ?? '',
                                   style: TextStyle(
-                                      color: Colors.grey.shade600
+                                      color: Colors.grey.shade600,
+                                      fontSize: 14
                                   ),
                                 ),
                               ],
@@ -267,13 +232,15 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                                   "Phone Number",
                                   style: TextStyle(
                                       color: Colors.grey.shade600,
-                                      fontWeight: FontWeight.bold
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14
                                   ),
                                 ),
                                 Text(
                                   widget.patient.personalDetails!.phoneNumber ?? '',
                                   style: TextStyle(
-                                      color: Colors.grey.shade600
+                                      color: Colors.grey.shade600,
+                                      fontSize: 14
                                   ),
                                 ),
                               ],
@@ -290,13 +257,15 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                                   "Address",
                                   style: TextStyle(
                                       color: Colors.grey.shade600,
-                                      fontWeight: FontWeight.bold
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14
                                   ),
                                 ),
                                 Text(
                                   widget.patient.personalDetails!.address ?? '',
                                   style: TextStyle(
-                                      color: Colors.grey.shade600
+                                      color: Colors.grey.shade600,
+                                      fontSize: 14
                                   ),
                                 ),
                               ],
@@ -315,13 +284,15 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                                   "City",
                                   style: TextStyle(
                                       color: Colors.grey.shade600,
-                                      fontWeight: FontWeight.bold
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14
                                   ),
                                 ),
                                 Text(
                                   widget.patient.personalDetails!.email ?? '',
                                   style: TextStyle(
-                                      color: Colors.grey.shade600
+                                      color: Colors.grey.shade600,
+                                      fontSize: 14
                                   ),
                                 ),
                               ],
@@ -343,9 +314,9 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                         ),
                         child: Column(
                           children: [
-                            Text(
+                            const Text(
                               'Next of Kin',
-                              style: GoogleFonts.roboto(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
 
                               ),
@@ -361,7 +332,8 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                                   "Name",
                                   style: TextStyle(
                                       color: Colors.grey.shade600,
-                                      fontWeight: FontWeight.bold
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14
                                   ),
                                 ),
                                 Text(
@@ -369,7 +341,8 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                                       ? "${widget.patient.nextOfKinDetails!.firstName.toString()} ${widget.patient.nextOfKinDetails!.lastName.toString()}"
                                       : '',
                                   style: TextStyle(
-                                      color: Colors.grey.shade600
+                                      color: Colors.grey.shade600,
+                                      fontSize: 14
                                   ),
                                 ),
                               ],
@@ -387,7 +360,8 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                                   "Email",
                                   style: TextStyle(
                                     color: Colors.grey.shade600,
-                                    fontWeight: FontWeight.bold
+                                    fontWeight: FontWeight.bold,
+                                      fontSize: 14
                                   ),
                                 ),
                                 Text(
@@ -395,7 +369,8 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                                     ? widget.patient.nextOfKinDetails!.email.toString()
                                     : '',
                                   style: TextStyle(
-                                      color: Colors.grey.shade600
+                                      color: Colors.grey.shade600,
+                                      fontSize: 14
                                   ),
                                 ),
                               ],
@@ -412,7 +387,8 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                                   "Phone Number",
                                   style: TextStyle(
                                       color: Colors.grey.shade600,
-                                      fontWeight: FontWeight.bold
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14
                                   ),
                                 ),
                                 Text(
@@ -420,7 +396,8 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                                       ? widget.patient.nextOfKinDetails!.phoneNumber.toString()
                                       : '',
                                   style: TextStyle(
-                                      color: Colors.grey.shade600
+                                      color: Colors.grey.shade600,
+                                      fontSize: 14
                                   ),
                                 ),
                               ],
@@ -437,7 +414,8 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                                   "Address",
                                   style: TextStyle(
                                       color: Colors.grey.shade600,
-                                      fontWeight: FontWeight.bold
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14
                                   ),
                                 ),
                                 Text(
@@ -445,7 +423,8 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                                       ? widget.patient.nextOfKinDetails!.address.toString()
                                       : '',
                                   style: TextStyle(
-                                      color: Colors.grey.shade600
+                                      color: Colors.grey.shade600,
+                                      fontSize: 14
                                   ),
                                 ),
                               ],
@@ -464,6 +443,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                                   "City",
                                   style: TextStyle(
                                       color: Colors.grey.shade600,
+                                      fontSize: 14,
                                       fontWeight: FontWeight.bold
                                   ),
                                 ),
@@ -483,38 +463,6 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                       const SizedBox(
                         height: 10,
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Colors.grey,
-                          )
-                        ),
-                        child: Column(
-                          children: [
-                            Text(
-                              'Questions',
-                              style: GoogleFonts.roboto(
-                                fontWeight: FontWeight.bold,
-
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 12,
-                            ),
-
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      // PatientDetailsVitalsCard(
-                      //     vitals: vitals
-                      // )
-
-                      Container()
                     ],
                   ),
                 )
@@ -526,198 +474,19 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
               child: CircleAvatar(
                 radius: 100,
                 backgroundImage: NetworkImage(
-                  widget.patient.personalDetails!.displayPicture ?? MyNetworkImageAssets.defaultProfilePic,
+                  widget.patient.personalDetails!.displayPicture ?? NetworkImageConstants.logo,
                 )
               ),
             )
           ],
         ),
       ),
-      bottomNavigationBar: GestureDetector(
-        onTap: () {
-          _showDateTimePicker();
-        },
-        child: Container(
-          color: Colors.white,
-          child: Container(
-            height: 50,
-            alignment: Alignment.center,
-            margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              color: Pallete.primaryColor,
-              borderRadius: BorderRadius.circular(10)
-            ),
-            child: const Text(
-              'Book Appointment',
-              style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 
-  void _loadUserProfile() async {
-    await userProfileProvider.fetchDoctorUserProfile(emailAddress: user!.email!,);
-
-    setState(() {
-      _userProfile = userProfileProvider.doctorUserProfile;
-    });
-  }
-
-  void _submitForm() async {
-    if (_userProfile == null) {
-      Logger().e('UserProfile is null. Cannot submit form.');
-      return;
-    }
-
-    showDialog(
-        context: context,
-        builder: (context){
-          return const CustomLoader(message: 'Booking appointment');
-        }
-    );
-
-    Map<String, dynamic> bookingDetails = {
-
-      "phone_number": widget.patient.personalDetails!.phoneNumber,
-      "email": widget.patient.personalDetails!.email,
-      "patient_id": widget.patient.personalDetails!.patientId,
-      "first_name": widget.patient.personalDetails!.firstName,
-      "last_name": widget.patient.personalDetails!.lastName,
-      "date_of_birth": widget.patient.personalDetails!.dateOfBirth,
-      "national_id": widget.patient.personalDetails!.nationalId,
-      "applied_service": "",
-      "department": "Neurology",
-      "outcome": [],
-      "category": "Personal",
-      "procedure": "Headache Evaluation and Treatment",
-      "preferred_appointment_date": DateFormat('yyyy-MM-dd').format(_selectedDate),
-      "preferred_appointment_time": _selectedTime.format(context),
-      "appointmentid": generateAppointmentId(),
-      "preferredDoctor": _userProfile!.personalDetails.doctorId,
-      "doctorEmail": _userProfile!.personalDetails!.email,
-      "doctorName": "${_userProfile!.personalDetails!.firstName} ${_userProfile!.personalDetails!.lastName}",
-      "doctorid": _userProfile!.personalDetails!.doctorId,
-      "service_provider": "Solusi Medical Centre",
-      "status": "Pending",
-      "casenumber": generateCaseNumber(),
-      "id": generateCaseNumber(),
-      "referenceNumber": generateRefNumber(),
-      "langauge": "No",
-      "diability": "No",
-      "other_services": "",
-      "communication": "No",
-      "sensory_processing": "No",
-      "cognitive_disability": "No",
-      "street_address": _userProfile!.personalDetails.address,
-      "siteid": "214377834989",
-      "gender": _userProfile!.personalDetails.gender,
-      'medical_centre': 'Solusi Medical Centre',
-      'backup_date': DateFormat('yyyy-MM-dd').format(_selectedDate),
-      'backup_time': _selectedTime.format(context),
-      'cancellation_reason': '',
-      'details': '',
-      'street_address_line2': '',
-      'location': '',
-      'prevAppointmentSchedule': {},
-    };
-
-    // Log the booking details before sending
-    final Logger logger = Logger();
-    logger.i('Booking Details: $bookingDetails');
-
-    await NewAptServices.bookAppointment(appointmentData: bookingDetails,).then((statusCode) {
-      if(statusCode == 200 || statusCode == 201){
-        Helpers.back(context);
-        Helpers.back(context);
-
-        ScaffoldMessenger.of(context).showSnackBar(MySnackBars.appointmentBookingSnackBar);
-
-      }else{
-        Helpers.back(context);
-        Helpers.back(context);
-
-        ScaffoldMessenger.of(context).showSnackBar(MySnackBars.failureSnackBar);
-      }
-    }).catchError((error) {
-      logger.e('Exception occurred while creating appointment: $error');
-      Helpers.back(context);
-      Helpers.back(context);
-
-      ScaffoldMessenger.of(context).showSnackBar(MySnackBars.failureSnackBar);
-    });
-  }
-
-  String generateAppointmentId() {
-    final random = Random();
-    final numbers = List.generate(7, (index) => random.nextInt(10)).join();
-    return 'APP$numbers';
-  }
-
-  String generateCaseNumber() {
-    final random = Random();
-    final randomNumbers = List.generate(7, (_) => random.nextInt(10));
-    return 'CSE${randomNumbers.join()}';
-  }
-
-  String generateRefNumber() {
-    final random = Random();
-    final randomNumbers = List.generate(7, (_) => random.nextInt(10));
-    return 'REF${randomNumbers.join()}';
-  }
-
-  String createdAtDate() {
-    final now = DateTime.now();
-    final formattedDate = "${now.year}-${_addLeadingZero(now.month)}-${_addLeadingZero(now.day)}";
-    final formattedTime = "${_addLeadingZero(now.hour)}:${_addLeadingZero(now.minute)}:${_addLeadingZero(now.second)}";
-    return "$formattedDate $formattedTime";
-  }
-
-  String _addLeadingZero(int number) {
-    return number.toString().padLeft(2, '0');
-  }
-
-  String updatedAtDate() {
-    final now = DateTime.now();
-    final formattedDate = "${now.year}-${_addLeadingZero(now.month)}-${_addLeadingZero(now.day)}";
-    final formattedTime = "${_addLeadingZero(now.hour)}:${_addLeadingZero(now.minute)}:${_addLeadingZero(now.second)}";
-    return "$formattedDate $formattedTime";
-  }
-
-
-  TimeOfDay _selectedTime = TimeOfDay.now();
-  DateTime _selectedDate = DateTime.now();
-
-
-  Future<void> _showDateTimePicker() async {
-    final pickedDate = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime(DateTime.now().year + 1),
-    );
-
-    if (pickedDate != null) {
-      final pickedTime = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-      );
-
-      if (pickedTime != null) {
-        setState(() {
-          _selectedDate = pickedDate;
-          _selectedTime = pickedTime;
-        });
-        _submitForm();
-      }
-    }
-  }
 
 }
+
 
 
 

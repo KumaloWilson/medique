@@ -1,8 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:medique/models/patient.dart';
 import 'package:medique/models/patient_personal_details.dart';
 import 'package:medique/views/my_patients/add_patient.dart';
+import 'package:medique/views/my_patients/add_vitals.dart';
+import 'package:medique/views/my_patients/ask_mediguide.dart';
 import 'package:medique/views/my_patients/next_of_kin_form.dart';
+import 'package:medique/views/my_patients/patient_details.dart';
+import 'package:medique/views/my_patients/patients_screen.dart';
+import 'package:medique/views/my_patients/vitalHistory.dart';
 import '../../views/auth/email_verification.dart';
 import '../../views/auth/email_verification_success.dart';
 import '../../views/auth/forgot_password.dart';
@@ -22,11 +28,11 @@ class RoutesHelper {
   static String resendVerificationEmailScreen = '/resendVerificationEmail';
   static String adminHomeScreen = '/adminHome';
   static String userHomeScreen = '/userHome';
-  static String adminStaffStatsScreen = '/adminStaffStats';
-  static String adminShiftStatsScreen = '/adminShiftStats';
+  static String addVitalsScreen = '/addVitals';
+  static String viewPatientVitalsHistory = '/viewPatientVitals';
   static String nurseAddPatientScreen = '/addPatient';
-  static String viewUserScreen = '/viewUsers';
-  static String userProfileScreen = '/profile';
+  static String viewPatientScreen = '/viewPatient';
+  static String askMediguideScreen = '/askMediguideAI';
   static String updateShiftScreen = '/updateShift';
   static String nextOfKinDetailsScreen = '/addNextOfKin';
   static String viewAllPatientsScreen = '/viewPatients';
@@ -69,5 +75,34 @@ class RoutesHelper {
           return AddNextOfKin(user: user, patientPersonalDetails: patientPersonalDetails);
         }
     ),
+    GetPage(name: viewAllPatientsScreen, page: () => const PatientsScreen()),
+
+    GetPage(
+        name: viewPatientScreen,
+        page: () {
+          final patient = Get.arguments as Patient;
+          return PatientDetailsScreen(patient: patient,);
+        }
+    ),
+
+    GetPage(
+        name: addVitalsScreen,
+        page: () {
+          final args = Get.arguments as List;
+          final user = args[0] as User;
+          final Patient patient = args[1] as Patient;
+
+          return AddVitalsScreen(user: user, patient: patient);
+        }
+    ),
+
+    GetPage(
+        name: viewPatientVitalsHistory,
+        page: () {
+          final patient = Get.arguments as Patient;
+          return ViewPatientVitalsHistory(patient: patient,);
+        }
+    ),
+    GetPage(name: askMediguideScreen, page: () => const AskMediguideScreen()),
   ];
 }
