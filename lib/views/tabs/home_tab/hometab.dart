@@ -1,24 +1,22 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:medique/core/constants/local_image_constants.dart';
 import 'package:medique/core/utils/routes.dart';
-
-import '../../../animations/fade_in_animation.dart';
 import '../../../animations/leftbounce_animation.dart';
 import '../../../animations/rightbounce_animation.dart';
 import '../../../core/constants/color_constants.dart';
 import '../../../widgets/drawer/doctor_drawer.dart';
+import 'ai_hub/ai_hub.dart';
 
-class DoctorHomeScreen extends StatefulWidget {
-  const DoctorHomeScreen({super.key});
+class NurseHomeScreen extends StatefulWidget {
+  const NurseHomeScreen({super.key});
 
   @override
-  _DoctorHomeScreenState createState() => _DoctorHomeScreenState();
+  _NurseHomeScreenState createState() => _NurseHomeScreenState();
 }
 
-class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
+class _NurseHomeScreenState extends State<NurseHomeScreen> {
   final user = FirebaseAuth.instance.currentUser;
 
   @override
@@ -116,7 +114,8 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                 ),
               ),
             ),
-          )),
+          )
+      ),
       body: Container(
         decoration: const BoxDecoration(
             color: Colors.white,
@@ -199,6 +198,41 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
           Row(
             children: [
               Expanded(
+                child: BounceFromRightAnimation(
+                  delay: 1.5,
+                  child: GestureDetector(
+                    onTap: () {
+
+                      Get.toNamed(RoutesHelper.tbScanner);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Pallete.primaryColor)),
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            LocalImageConstants.xRayScanner,
+                            height: 120,
+                          ),
+                          Text(
+                            'TB Scanner',
+                            style: TextStyle(
+                              color: Pallete.primaryColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 12,
+              ),
+              Expanded(
                 child: BounceFromLeftAnimation(
                   delay: 1.5,
                   child: GestureDetector(
@@ -221,41 +255,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
                             height: 120,
                           ),
                           const Text(
-                            'My Patients',
-                            style: TextStyle(
-                              color: Pallete.primaryColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                width: 12,
-              ),
-              Expanded(
-                child: BounceFromRightAnimation(
-                  delay: 1.5,
-                  child: GestureDetector(
-                    onTap: () {
-                      //Helpers.temporaryNavigator(context, const AIHub());
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Pallete.primaryColor)),
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            LocalImageConstants.aiHub,
-                            height: 120,
-                          ),
-                          const Text(
-                            'AI Hub',
+                            'Staff',
                             style: TextStyle(
                               color: Pallete.primaryColor,
                               fontWeight: FontWeight.bold,

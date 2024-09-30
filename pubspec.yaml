@@ -47,6 +47,7 @@ dependencies:
   tuple: ^2.0.2
   dash_chat_2: ^0.0.21
   flutter_animate: ^4.5.0
+  camera: ^0.11.0+2
 
 dev_dependencies:
   flutter_test:

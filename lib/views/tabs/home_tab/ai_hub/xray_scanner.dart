@@ -1,10 +1,14 @@
-import 'package:MediGuideAI/constant/colors.dart';
-import 'package:MediGuideAI/utils/asset_utils/image_assets.dart';
-import 'package:MediGuideAI/utils/asset_utils/xray_ai_model.dart';
-import 'package:flutter/material.dart';
+
+
 import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
+import 'package:medique/core/constants/local_image_constants.dart';
+import 'package:medique/core/utils/logs.dart';
 import 'package:tflite_v2/tflite_v2.dart';
-import '../../../../widgets/camera_overlay.dart';
+
+import '../../../../core/constants/color_constants.dart';
+import '../../../../core/utils/xray_ai_model.dart';
+import '../../../../widgets/camera/camera_overlay.dart';
 
 class XrayScanner extends StatefulWidget {
   const XrayScanner({super.key});
@@ -38,7 +42,7 @@ class _XrayScannerState extends State<XrayScanner> {
       setState(() {});
     }).catchError((Object e) {
       if (e is CameraException) {
-        print("CAMERA FAILED ZVEKUTODAROoox");
+        DevLogs.logError("CAMERA FAILED ZVEKUTODAROoox");
       }
     });
   }
@@ -325,7 +329,7 @@ class _XrayScannerState extends State<XrayScanner> {
                           child: SizedBox(
                             width: displayWidth,
                             height: displayHeight * 0.12,
-                            child: Image.asset(MyImageLocalAssets.xRayScanner),
+                            child: Image.asset(LocalImageConstants.xRayScanner),
                           ),
                         ),
                         Positioned(

@@ -9,6 +9,7 @@ import 'package:medique/views/my_patients/next_of_kin_form.dart';
 import 'package:medique/views/my_patients/patient_details.dart';
 import 'package:medique/views/my_patients/patients_screen.dart';
 import 'package:medique/views/my_patients/vitalHistory.dart';
+import 'package:medique/views/tabs/home_tab/ai_hub/xray_scanner.dart';
 import '../../views/auth/email_verification.dart';
 import '../../views/auth/email_verification_success.dart';
 import '../../views/auth/forgot_password.dart';
@@ -36,6 +37,7 @@ class RoutesHelper {
   static String updateShiftScreen = '/updateShift';
   static String nextOfKinDetailsScreen = '/addNextOfKin';
   static String viewAllPatientsScreen = '/viewPatients';
+  static String tbScanner = '/tbScanner';
 
   static List<GetPage> routes = [
     GetPage(
@@ -103,6 +105,8 @@ class RoutesHelper {
           return ViewPatientVitalsHistory(patient: patient,);
         }
     ),
+    GetPage(name: tbScanner, page: () => const XrayScanner()),
+
     GetPage(name: askMediguideScreen, page: () => const AskMediguideScreen()),
   ];
 }
