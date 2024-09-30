@@ -61,3 +61,4 @@ flutter:
   assets:
     - assets/images/
     - assets/animations/
+    - assets/models/xray_model/
