@@ -22,471 +22,260 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade300,
+      backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        backgroundColor: Pallete.primaryColor.withOpacity(0.9),
+        elevation: 4,
+        shadowColor: Colors.grey.withOpacity(0.2),
+        title: const Text('Patient Details', style: TextStyle(color: Colors.white)),
+        centerTitle: true,
         actions: [
           PopupMenuButton<int>(
+            icon: const Icon(Icons.more_vert, color: Colors.white),
             onSelected: (value) {
               switch (value) {
                 case 0:
                   Get.toNamed(RoutesHelper.addVitalsScreen, arguments: [user, widget.patient]);
                   break;
                 case 1:
-                  //Helpers.temporaryNavigator(context, PrescribeMedicine(patient: widget.patient,));
+                //Helpers.temporaryNavigator(context, PrescribeMedicine(patient: widget.patient,));
                   break;
                 case 2:
                   Get.toNamed(RoutesHelper.askMediguideScreen);
                   break;
-
                 case 3:
                   Get.toNamed(RoutesHelper.viewPatientVitalsHistory, arguments: widget.patient);
                   break;
-
                 case 4:
                 // Perform action for option 1
-                  //Helpers.temporaryNavigator(context, PatientMedicalHistory(patient: widget.patient,));
+                //Helpers.temporaryNavigator(context, PatientMedicalHistory(patient: widget.patient,));
                   break;
               }
             },
             itemBuilder: (context) => [
               const PopupMenuItem(
                 value: 0,
-                child: Text('Add Vitals', style: TextStyle(fontSize: 14),),
+                child: ListTile(
+                  leading: Icon(Icons.add, color: Pallete.primaryColor),
+                  title: Text('Add Vitals'),
+                ),
               ),
-
               const PopupMenuItem(
                 value: 1,
-                child: Text('Prescribe Medicine', style: TextStyle(fontSize: 14),),
+                child: ListTile(
+                  leading: Icon(Icons.local_hospital, color: Pallete.primaryColor),
+                  title: Text('Prescribe Medicine'),
+                ),
               ),
-
               const PopupMenuItem(
                 value: 2,
-                child: Text('Ask MediGuide', style: TextStyle(fontSize: 14),),
+                child: ListTile(
+                  leading: Icon(Icons.help_outline, color: Pallete.primaryColor),
+                  title: Text('Ask MediGuide'),
+                ),
               ),
-
               const PopupMenuItem(
                 value: 3,
-                child: Text('Vitals History', style: TextStyle(fontSize: 14),),
+                child: ListTile(
+                  leading: Icon(Icons.history, color: Pallete.primaryColor),
+                  title: Text('Vitals History'),
+                ),
               ),
-
               const PopupMenuItem(
                 value: 4,
-                child: Text('Medical History', style: TextStyle(fontSize: 14),),
+                child: ListTile(
+                  leading: Icon(Icons.book, color: Pallete.primaryColor),
+                  title: Text('Medical History'),
+                ),
               ),
-
             ],
           ),
         ],
-
       ),
       extendBodyBehindAppBar: true,
       body: SingleChildScrollView(
         child: Stack(
           children: [
+            // Background gradient
+            Container(
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Pallete.primaryColor.withOpacity(0.1), Colors.white],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+            ),
             Column(
               children: [
                 Container(
-                  color: Colors.white,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                       horizontal: 16,
-                       vertical: 24
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(40),
+                      bottomRight: Radius.circular(40),
                     ),
-                    height: 350,
-                    decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(40)
-                        ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      )
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Pallete.primaryColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              widget.patient.personalDetails!.gender ?? '',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
                               ),
-                              decoration: const BoxDecoration(
-                                  color: Pallete.primaryColor,
-                                  borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(20),
-                                    bottomRight: Radius.circular(20),
-                                    topLeft: Radius.circular(20),
-                                  )
-                              ),
-                              child: Text(
-                                widget.patient.personalDetails!.gender ?? '',
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 12),
-                              ),
-                            ).animate().slideY(
-                                begin: -10,
-                                duration: const Duration(seconds: 2))
-                          ],
+                            ),
+                          ).animate().fadeIn(duration: const Duration(milliseconds: 1500)),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        "${widget.patient.personalDetails!.firstName} ${widget.patient.personalDetails!.lastName}",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                          color: Colors.black87,
                         ),
-                        const SizedBox(
-                          height: 12,
+                      ).animate().slideY(delay: 300.ms, begin: -0.2),
+                      const SizedBox(height: 12),
+                      Text(
+                        '${AddPatientHelper.calculateAge(widget.patient.personalDetails!.dateOfBirth!)} years',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey.shade600,
                         ),
-                        Text(
-                          "${widget.patient.personalDetails!.firstName} ${widget.patient.personalDetails!.lastName}",
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
-                        ),
-                        const SizedBox(
-                          height: 12,
-                        ),
-                        Text(
-                            '${AddPatientHelper.calculateAge(widget.patient.personalDetails!.dateOfBirth!)} years',
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey.shade600
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 12,
-                        ),
-                      ],
-                    ),
+                      ).animate().fadeIn(delay: 500.ms),
+                      const SizedBox(height: 16),
+                    ],
                   ),
                 ),
-                Container(
-                  decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius:
-                      BorderRadius.only(topRight: Radius.circular(40))),
+                Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(
-                        height: 20,
-                      ),
+                      const SizedBox(height: 20),
                       const Text(
                         'About',
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: Colors.grey,
-                            )
-                        ),
-                        child: Column(
-                          children: [
-                            const Text(
-                              'Contact Details',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 12,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Email",
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontWeight: FontWeight.bold,
-                                    fontSize: 14
-                                  ),
-                                ),
-                                Text(
-                                  widget.patient.personalDetails!.email ?? '',
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 14
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(
-                              height: 8,
-                            ),
-
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Phone Number",
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14
-                                  ),
-                                ),
-                                Text(
-                                  widget.patient.personalDetails!.phoneNumber ?? '',
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 14
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(
-                              height: 8,
-                            ),
-
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Address",
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14
-                                  ),
-                                ),
-                                Text(
-                                  widget.patient.personalDetails!.address ?? '',
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 14
-                                  ),
-                                ),
-                              ],
-                            ),
-
-
-
-                            const SizedBox(
-                              height: 8,
-                            ),
-
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "City",
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14
-                                  ),
-                                ),
-                                Text(
-                                  widget.patient.personalDetails!.email ?? '',
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 14
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: Colors.grey,
-                            )
-                        ),
-                        child: Column(
-                          children: [
-                            const Text(
-                              'Next of Kin',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 12,
-                            ),
-
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Name",
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14
-                                  ),
-                                ),
-                                Text(
-                                  widget.patient.nextOfKinDetails != null
-                                      ? "${widget.patient.nextOfKinDetails!.firstName.toString()} ${widget.patient.nextOfKinDetails!.lastName.toString()}"
-                                      : '',
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 14
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(
-                              height: 8,
-                            ),
-
-
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Email",
-                                  style: TextStyle(
-                                    color: Colors.grey.shade600,
-                                    fontWeight: FontWeight.bold,
-                                      fontSize: 14
-                                  ),
-                                ),
-                                Text(
-                                  widget.patient.nextOfKinDetails != null
-                                    ? widget.patient.nextOfKinDetails!.email.toString()
-                                    : '',
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 14
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(
-                              height: 8,
-                            ),
-
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Phone Number",
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14
-                                  ),
-                                ),
-                                Text(
-                                  widget.patient.nextOfKinDetails != null
-                                      ? widget.patient.nextOfKinDetails!.phoneNumber.toString()
-                                      : '',
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 14
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(
-                              height: 8,
-                            ),
-
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Address",
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14
-                                  ),
-                                ),
-                                Text(
-                                  widget.patient.nextOfKinDetails != null
-                                      ? widget.patient.nextOfKinDetails!.address.toString()
-                                      : '',
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 14
-                                  ),
-                                ),
-                              ],
-                            ),
-
-
-
-                            const SizedBox(
-                              height: 8,
-                            ),
-
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "City",
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold
-                                  ),
-                                ),
-                                Text(
-                                  widget.patient.nextOfKinDetails != null
-                                      ? widget.patient.nextOfKinDetails!.nationality.toString()  : '',
-                                  style: TextStyle(
-                                      color: Colors.grey.shade600
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
+                      _buildInfoCard('Contact Details', [
+                        _buildInfoRow('Email', widget.patient.personalDetails!.email ?? ''),
+                        _buildInfoRow('Phone Number', widget.patient.personalDetails!.phoneNumber ?? ''),
+                        _buildInfoRow('Address', widget.patient.personalDetails!.address ?? ''),
+                        _buildInfoRow('City', widget.patient.personalDetails!.address ?? ''),
+                      ]),
+                      const SizedBox(height: 10),
+                      _buildInfoCard('Next of Kin', [
+                        _buildInfoRow('Name', widget.patient.nextOfKinDetails != null ? "${widget.patient.nextOfKinDetails!.firstName} ${widget.patient.nextOfKinDetails!.lastName}" : ''),
+                        _buildInfoRow('Email', widget.patient.nextOfKinDetails?.email ?? ''),
+                        _buildInfoRow('Phone Number', widget.patient.nextOfKinDetails?.phoneNumber ?? ''),
+                        _buildInfoRow('Address', widget.patient.nextOfKinDetails?.address ?? ''),
+                      ]),
+                      const SizedBox(height: 20),
                     ],
                   ),
-                )
+                ),
               ],
             ),
             Positioned(
               right: 16,
-              top: 60,
+              top: 80,
               child: CircleAvatar(
                 radius: 100,
                 backgroundImage: NetworkImage(
                   widget.patient.personalDetails!.displayPicture ?? NetworkImageConstants.logo,
-                )
+                ),
+                backgroundColor: Colors.transparent,
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
 
+  Widget _buildInfoCard(String title, List<Widget> children) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 6,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Column(
+            children: children,
+          ),
+        ],
+      ),
+    );
+  }
 
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              color: Colors.grey.shade600,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
-
-
-
-

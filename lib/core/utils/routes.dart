@@ -10,6 +10,7 @@ import 'package:medique/views/my_patients/patient_details.dart';
 import 'package:medique/views/my_patients/patients_screen.dart';
 import 'package:medique/views/my_patients/vitalHistory.dart';
 import 'package:medique/views/tabs/home_tab/ai_hub/xray_scanner.dart';
+import 'package:medique/views/workers/pages/add_user.dart';
 import '../../views/auth/email_verification.dart';
 import '../../views/auth/email_verification_success.dart';
 import '../../views/auth/forgot_password.dart';
@@ -38,6 +39,7 @@ class RoutesHelper {
   static String nextOfKinDetailsScreen = '/addNextOfKin';
   static String viewAllPatientsScreen = '/viewPatients';
   static String tbScanner = '/tbScanner';
+  static String adminAddUserScreen = '/adminAddStaff';
 
   static List<GetPage> routes = [
     GetPage(
@@ -60,6 +62,7 @@ class RoutesHelper {
         page: () => const AccountVerificationSuccessful()),
     GetPage(name: forgotPasswordScreen, page: () => ForgotPasswordScreen()),
     GetPage(name: splashScreen, page: () => const SplashScreen()),
+    GetPage(name: adminAddUserScreen, page: () => const AdminAddUser()),
     GetPage(
         name: nurseAddPatientScreen,
         page: () {

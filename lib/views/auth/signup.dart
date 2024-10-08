@@ -38,7 +38,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Column(
               children: [
                 const SizedBox(height: 40),
-                const CircleAvatar(
+                CircleAvatar(
                   backgroundImage: AssetImage(
                     LocalImageConstants.logo,
                   ),
@@ -151,8 +151,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           onTap: () => Get.toNamed(RoutesHelper.forgotPasswordScreen),
                           child: RichText(
                             textAlign: TextAlign.center,
-                            text: TextSpan(
-                                style: const TextStyle(
+                            text: const TextSpan(
+                                style: TextStyle(
                                   fontSize: 12,
                                 ),
                                 children: [

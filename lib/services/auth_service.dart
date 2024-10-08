@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:medique/services/profile_services.dart';
 
 import '../core/utils/api_response.dart';
 import '../core/utils/routes.dart';
@@ -48,6 +49,7 @@ class AuthServices {
   }
 
   // Login with email and password
+  // Login with email and password
   static Future<APIResponse<User?>> login({
     required String emailAddress,
     required String password,
@@ -67,9 +69,49 @@ class AuthServices {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        return APIResponse(
-            success: false, message: 'No user found for that email.'
-        );
+        final userDoc = await StaffServices.fetchTempUser(profileEmail: emailAddress);
+
+        if (userDoc.data != null) {
+          try {
+            final UserCredential userCredential = await FirebaseAuth.instance
+                .createUserWithEmailAndPassword(
+                email: emailAddress, password: password);
+
+            if (userCredential.user != null) {
+              // Update in another place
+              // await userCredential.user!.updateProfile(
+              //   displayName: userDoc.data!.name,
+              //   photoURL: userDoc.data!.profilePicture!.isNotEmpty ||
+              //           userDoc.data!.profilePicture != null
+              //       ? userDoc.data!.profilePicture
+              //       : null,
+              // );
+
+              await userCredential.user!.sendEmailVerification();
+            }
+            return APIResponse(
+                success: true,
+                data: userCredential.user,
+                message: 'User profile found and login successful');
+          } on FirebaseAuthException catch (signUpError) {
+            // Handle signup errors
+            switch (signUpError.code) {
+              case 'email-already-in-use':
+                return APIResponse(
+                    success: false, message: 'Email Address already in use');
+              case 'weak-password':
+                return APIResponse(
+                    success: false, message: 'Your password is too weak');
+              default:
+                return APIResponse(
+                    success: false,
+                    message: 'Unknown error, please contact Support');
+            }
+          }
+        } else {
+          return APIResponse(
+              success: false, message: 'No user found for that email.');
+        }
       } else {
         switch (e.code) {
           case 'invalid-email':
@@ -91,6 +133,7 @@ class AuthServices {
           success: false, message: 'An error occurred. Please try again.');
     }
   }
+
 
   // Sign out user
   static Future<APIResponse<void>> signOut() async {

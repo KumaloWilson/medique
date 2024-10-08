@@ -6,6 +6,31 @@ import 'logs.dart';
 
 class CacheUtils{
 
+  static Future<bool> checkOnBoardingStatus() async {
+
+    bool hasSeenOnboarding;
+
+    const key = 'hasSeenOnboarding';
+    final prefs = await SharedPreferences.getInstance();
+    hasSeenOnboarding = prefs.getBool(key) ?? false;
+
+
+    return hasSeenOnboarding;
+  }
+
+  static Future<bool> updateOnboardingStatus(bool status) async {
+    bool hasSeenOnboarding = status;
+
+    const key = 'hasSeenOnboarding';
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(key, status);
+    hasSeenOnboarding = await checkOnBoardingStatus();
+
+    return hasSeenOnboarding;
+  }
+
+
   static Future<void> saveUserRoleToCache(String role) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('user_role', role.toLowerCase());

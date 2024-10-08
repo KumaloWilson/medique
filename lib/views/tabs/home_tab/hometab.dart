@@ -202,7 +202,6 @@ class _NurseHomeScreenState extends State<NurseHomeScreen> {
                   delay: 1.5,
                   child: GestureDetector(
                     onTap: () {
-
                       Get.toNamed(RoutesHelper.tbScanner);
                     },
                     child: Container(
@@ -216,7 +215,7 @@ class _NurseHomeScreenState extends State<NurseHomeScreen> {
                             LocalImageConstants.xRayScanner,
                             height: 120,
                           ),
-                          Text(
+                          const Text(
                             'TB Scanner',
                             style: TextStyle(
                               color: Pallete.primaryColor,

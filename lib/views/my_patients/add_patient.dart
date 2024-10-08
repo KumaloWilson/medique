@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
@@ -176,6 +177,7 @@ class _AddPatientState extends State<AddPatient> {
               child: GeneralButton(
                 onTap: (){
                   final patientPersonalDetails = PatientPersonalDetails(
+                    patientId: _autoGenID(),
                     firstName: firstNameController.text,
                     lastName: lastNameController.text,
                     email: emailController.text,
@@ -206,5 +208,10 @@ class _AddPatientState extends State<AddPatient> {
         ),
       ),
     );
+  }
+
+
+  static String _autoGenID() {
+    return FirebaseFirestore.instance.collection('patients').doc().id;
   }
 }

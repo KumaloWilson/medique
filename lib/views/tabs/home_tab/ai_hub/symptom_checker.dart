@@ -1,8 +1,8 @@
 import 'dart:math';
-
-import 'package:MediGuideAI/constant/colors.dart';
-import 'package:MediGuideAI/views/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
+
+import '../../../../core/constants/color_constants.dart';
+import '../../../../widgets/text_fields/custom_text_field.dart';
 
 class SymptomChecker extends StatefulWidget {
   const SymptomChecker({super.key});
@@ -55,7 +55,7 @@ class _SymptomCheckerState extends State<SymptomChecker> {
         backgroundColor: Colors.transparent,
         body: Center(
           child: Container(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -63,14 +63,14 @@ class _SymptomCheckerState extends State<SymptomChecker> {
               ),
               child: CustomTextField(
                 labelText: 'Type any disease',
-                prefixIcon: Icon(
+                prefixIcon: const Icon(
                   Icons.search
                 ),
                 suffixIconButton: IconButton(
                   onPressed: (){
 
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.send,
                     color: Pallete.primaryColor,
                   ),
