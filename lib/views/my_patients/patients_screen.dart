@@ -21,8 +21,9 @@ class _PatientsScreenState extends State<PatientsScreen> {
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Pallete.primaryColor,
+        iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
-        title: const Text('My Patients'),
+        title: const Text('My Patients', style: TextStyle(color: Colors.white),),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(100),
           child: Container(
@@ -44,7 +45,7 @@ class _PatientsScreenState extends State<PatientsScreen> {
                       child: TextField(
                         onChanged: (value) {
                           setState(() {
-                            _searchQuery = value.trim(); // Update search query
+                            _searchQuery = value.trim();
                           });
                         },
                         decoration: InputDecoration(
@@ -104,7 +105,6 @@ class _PatientsScreenState extends State<PatientsScreen> {
 
             List<Patient> patients = snapshot.data!;
 
-            // Filter the patients based on the search query
             if (_searchQuery.isNotEmpty) {
               patients = patients.where((patient) {
                 final name = '${patient.personalDetails!.firstName} ${patient.personalDetails!.lastName}'.toLowerCase();

@@ -9,6 +9,7 @@ class ViewPatientVitalsHistory extends StatefulWidget {
   final Patient patient;
   const ViewPatientVitalsHistory({super.key, required this.patient});
 
+  @override
   State<ViewPatientVitalsHistory> createState() => _ViewPatientVitalsHistoryState();
 }
 
@@ -22,8 +23,12 @@ class _ViewPatientVitalsHistoryState extends State<ViewPatientVitalsHistory> wit
         elevation: 0.0,
         backgroundColor: Pallete.primaryColor,
         centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
-            '${widget.patient.personalDetails!.firstName.toString()}`s Vitals'
+            '${widget.patient.personalDetails!.firstName.toString()}`s Vitals',
+          style: const TextStyle(
+            color: Colors.white
+          ),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(100),

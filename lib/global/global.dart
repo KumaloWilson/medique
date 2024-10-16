@@ -3,7 +3,8 @@ enum UserRole {
   admin
 }
 
-enum FeedbackTag {
-  alpha,
-  hospital
+
+enum MessageType {
+  text,
+  image
 }

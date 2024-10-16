@@ -4,13 +4,16 @@ import 'package:medique/models/patient.dart';
 import 'package:medique/models/patient_personal_details.dart';
 import 'package:medique/views/my_patients/add_patient.dart';
 import 'package:medique/views/my_patients/add_vitals.dart';
-import 'package:medique/views/my_patients/ask_mediguide.dart';
 import 'package:medique/views/my_patients/next_of_kin_form.dart';
 import 'package:medique/views/my_patients/patient_details.dart';
 import 'package:medique/views/my_patients/patients_screen.dart';
+import 'package:medique/views/my_patients/prescribe_medicine.dart';
+import 'package:medique/views/my_patients/prescriptions_history.dart';
 import 'package:medique/views/my_patients/vitalHistory.dart';
 import 'package:medique/views/tabs/home_tab/ai_hub/xray_scanner.dart';
 import 'package:medique/views/workers/pages/add_user.dart';
+import '../../views/ai_screens/chat_bot_screen.dart';
+import '../../views/ai_screens/symptom_checker_screen.dart';
 import '../../views/auth/email_verification.dart';
 import '../../views/auth/email_verification_success.dart';
 import '../../views/auth/forgot_password.dart';
@@ -34,12 +37,15 @@ class RoutesHelper {
   static String viewPatientVitalsHistory = '/viewPatientVitals';
   static String nurseAddPatientScreen = '/addPatient';
   static String viewPatientScreen = '/viewPatient';
-  static String askMediguideScreen = '/askMediguideAI';
+  static String symptomCheckerScreen = '/askMediguideAI';
   static String updateShiftScreen = '/updateShift';
   static String nextOfKinDetailsScreen = '/addNextOfKin';
   static String viewAllPatientsScreen = '/viewPatients';
   static String tbScanner = '/tbScanner';
   static String adminAddUserScreen = '/adminAddStaff';
+  static String chatBotScreen = '/chatBotScreen';
+  static String prescribeMedicineScreen = '/prescribeMedication';
+  static String viewPatientMedicalHistory = '/viewPatientHistory';
 
   static List<GetPage> routes = [
     GetPage(
@@ -110,6 +116,27 @@ class RoutesHelper {
     ),
     GetPage(name: tbScanner, page: () => const XrayScanner()),
 
-    GetPage(name: askMediguideScreen, page: () => const AskMediguideScreen()),
+    GetPage(name: symptomCheckerScreen, page: () => SymptomCheckerScreen()),
+    GetPage(
+        name: chatBotScreen,
+        page: () {
+          final disease = Get.arguments as String;
+          return ChatBotScreen(disease: disease);
+        }),
+
+    GetPage(
+        name: prescribeMedicineScreen,
+        page: () {
+          final patient = Get.arguments as Patient;
+          return PrescribeMedicineScreen(patient: patient,);
+        }),
+
+    GetPage(
+        name: viewPatientMedicalHistory,
+        page: () {
+          final patient = Get.arguments as Patient;
+          return PatientMedicalHistory(patient: patient,);
+        }),
   ];
 }
+

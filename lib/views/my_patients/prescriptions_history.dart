@@ -1,13 +1,11 @@
-import 'package:MediGuideAI/models/patient.dart';
-import 'package:MediGuideAI/views/widgets/medicine_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-
-import '../../../constant/colors.dart';
-import '../../../models/prescriptions_model.dart';
-import '../../../services/prescription_services/prescription.dart';
-import '../../widgets/network_error.dart';
+import 'package:medique/widgets/cards/prescription_card.dart';
+import '../../core/constants/color_constants.dart';
+import '../../core/utils/api_response.dart';
+import '../../models/patient.dart';
+import '../../models/prescription.dart';
+import '../../services/prescription_services.dart';
 
 class PatientMedicalHistory extends StatefulWidget {
   final Patient patient;
@@ -17,39 +15,15 @@ class PatientMedicalHistory extends StatefulWidget {
   State<PatientMedicalHistory> createState() => _PatientMedicalHistoryState();
 }
 
-class _PatientMedicalHistoryState extends State<PatientMedicalHistory> with SingleTickerProviderStateMixin{
-
-  final PagingController<int, Prescription> _prescriptionsHistoryPagingController = PagingController(firstPageKey: 1);
-  final PagingController<int, Prescription> _prescriptionsPagingController = PagingController(firstPageKey: 1);
+class _PatientMedicalHistoryState extends State<PatientMedicalHistory>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final user = FirebaseAuth.instance.currentUser;
-
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-
-    _prescriptionsPagingController.addPageRequestListener((pageKey) {
-      PrescriptionServices.getCurrentPrescriptionByPatientEmail(
-          email: widget.patient.personalDetails!.email!,
-          pageSize: 5,
-          pageKey: pageKey,
-          pagingController: _prescriptionsPagingController
-      );
-    });
-
-
-    _prescriptionsHistoryPagingController.addPageRequestListener((pageKey) {
-      PrescriptionServices.getPrescriptionHistoryByPatientEmail(
-          email: widget.patient.personalDetails!.email!,
-          pageSize: 5,
-          pageKey: pageKey,
-          pagingController: _prescriptionsHistoryPagingController
-      );
-    });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +33,10 @@ class _PatientMedicalHistoryState extends State<PatientMedicalHistory> with Sing
         elevation: 0.0,
         backgroundColor: Pallete.primaryColor,
         centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
-            'Prescriptions'
+          'Prescriptions',
+          style: TextStyle(color: Colors.white),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(100),
@@ -69,31 +45,28 @@ class _PatientMedicalHistoryState extends State<PatientMedicalHistory> with Sing
             child: Container(
               decoration: const BoxDecoration(
                   color: Pallete.primaryColor,
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(40))),
+                  borderRadius: BorderRadius.only(bottomLeft: Radius.circular(40))),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-
                   TabBar(
                     controller: _tabController,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    indicatorSize: TabBarIndicatorSize.label,
-                    indicatorColor: Colors.white,
-                    labelPadding: const EdgeInsets.symmetric(horizontal: 6),
+                    physics: const BouncingScrollPhysics(),
+                    isScrollable: true,
+                    unselectedLabelStyle: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                    ),
+                    labelStyle: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                     tabs: const [
-
-                      Tab(
-                        text: 'Ongoing',
-                      ),
-                      Tab(
-                        text: 'History',
-                      ),
+                      Tab(text: 'Ongoing'),
+                      Tab(text: 'History'),
                     ],
                   ),
-                  const SizedBox(
-                    height: 16,
-                  )
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
@@ -104,209 +77,51 @@ class _PatientMedicalHistoryState extends State<PatientMedicalHistory> with Sing
         padding: const EdgeInsets.all(16),
         decoration: const BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.only(topRight: Radius.circular(30))
-        ),
-        child: TabBarView(
-          controller: _tabController,
-          children:<Widget>[
-            PagedListView<int,  Prescription>(
-              pagingController: _prescriptionsPagingController,
-              builderDelegate: PagedChildBuilderDelegate<Prescription>(
-                itemBuilder: (context, prescription, index) {
+            borderRadius: BorderRadius.only(topRight: Radius.circular(30))),
+        child: StreamBuilder<APIResponse<Map<String, List<Prescription>>>>(
+          stream: PrescriptionServices.getPrescriptionsStream(patientEmail:  widget.patient.personalDetails!.email!),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.success) {
+              return const Center(child: Text('Error loading prescriptions.'));
+            }
 
-                  return Container(
-                    clipBehavior: Clip.hardEdge,
-                    margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(12)),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
+            final ongoingPrescriptions = snapshot.data!.data!['ongoing']!;
+            final historyPrescriptions = snapshot.data!.data!['history']!;
 
-                            Text(
-                              '${prescription.prescriptionDate}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-
-                              ),
-
-                            ),
-                            PopupMenuButton<int>(
-                              onSelected: (value) {
-                                switch (value) {
-                                  case 0:
-                                  // Perform action for option 1
-                                    print('Option 1 selected');
-                                    break;
-                                }
-                              },
-                              itemBuilder: (context) => [
-                                const PopupMenuItem(
-                                  value: 0,
-                                  child: Text('Download Copy'),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        const Divider(),
-
-                        SizedBox(
-                          height: 170,
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: prescription.medicines.map((e) => MedicineCard(medicine: e)).toList(),
-                          ),
-                        ),
-
-                        const SizedBox(
-                          height: 8,
-                        ),
-
-
-                        const Divider(),
-                        const Text(
-                          'Notes',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-
-                        const SizedBox(
-                          height: 8,
-                        ),
-
-                        Text(
-                          prescription.notes,
-                          style: TextStyle(
-                              color: Pallete.lightPrimaryTextColor
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                firstPageErrorIndicatorBuilder: (_) =>
-                    NetworkError(onTap: () {}),
-                animateTransitions: true,
-              ),
-            ),
-
-            PagedListView<int,  Prescription>(
-              pagingController: _prescriptionsHistoryPagingController,
-              builderDelegate: PagedChildBuilderDelegate<Prescription>(
-                itemBuilder: (context, prescription, index) {
-                  return Container(
-                    clipBehavior: Clip.hardEdge,
-                    margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(12)),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              prescription.prescriptionDate.toString(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-
-                              ),
-
-                            ),
-
-                            PopupMenuButton<int>(
-                              onSelected: (value) {
-                                switch (value) {
-                                  case 0:
-                                  // Perform action for option 1
-                                    print('Option 1 selected');
-                                    break;
-                                }
-                              },
-                              itemBuilder: (context) => [
-                                const PopupMenuItem(
-                                  value: 0,
-                                  child: Text('Download Copy'),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const Divider(),
-
-                        SizedBox(
-                          height: 170,
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: prescription.medicines.map((e) => MedicineCard(medicine: e)).toList(),
-                          ),
-                        ),
-
-                        const SizedBox(
-                          height: 8,
-                        ),
-
-
-                        const Divider(),
-                        const Text(
-                          'Notes',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold
-                          ),
-                        ),
-
-                        const SizedBox(
-                          height: 8,
-                        ),
-
-                        Text(
-                          prescription.notes,
-                          style: TextStyle(
-                              color: Pallete.lightPrimaryTextColor
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                firstPageErrorIndicatorBuilder: (_) =>
-                    NetworkError(onTap: () {}),
-                animateTransitions: true,
-              ),
-            ),
-          ],
+            return TabBarView(
+              controller: _tabController,
+              children: <Widget>[
+                PrescriptionList(prescriptions: ongoingPrescriptions),
+                PrescriptionList(prescriptions: historyPrescriptions),
+              ],
+            );
+          },
         ),
       ),
+    );
+  }
+}
+
+
+class PrescriptionList extends StatelessWidget {
+  final List<Prescription> prescriptions;
+
+  const PrescriptionList({super.key, required this.prescriptions});
+
+  @override
+  Widget build(BuildContext context) {
+    if (prescriptions.isEmpty) {
+      return const Center(child: Text('No prescriptions found.'));
+    }
+
+    return ListView.builder(
+      itemCount: prescriptions.length,
+      itemBuilder: (context, index) {
+        final prescription = prescriptions[index];
+        return PrescriptionCard(prescription: prescription);
+      },
     );
   }
 }

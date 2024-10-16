@@ -73,7 +73,9 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
                             onPressed: () {
                               _key.currentState!.openDrawer();
                             },
-                            icon: const Icon(Icons.menu),
+                            icon: const Icon(
+                                Icons.menu
+                            ),
                           ),
                         Container(
                           width: 120,

@@ -1,33 +1,26 @@
-import 'package:MediGuideAI/helpers/helpers/genenal_helpers.dart';
-import 'package:MediGuideAI/models/patient.dart';
-import 'package:MediGuideAI/services/prescription_services/prescription.dart';
-import 'package:MediGuideAI/views/doctor_module/tabs/home_tab/ai_hub/symptom_checker.dart';
-import 'package:MediGuideAI/views/doctor_module/tabs/home_tab/ai_hub/xray_scanner.dart';
-import 'package:MediGuideAI/views/universal_screens/medical_chatbot/medical_chatbot.dart';
-import 'package:MediGuideAI/views/widgets/custom_dropdown.dart';
-import 'package:MediGuideAI/views/widgets/custom_loader.dart';
-import 'package:MediGuideAI/views/widgets/custom_text_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../../../constant/colors.dart';
-import '../../widgets/custom_snackbar.dart';
-import '../../widgets/custome_button2.dart';
-import '../../widgets/dialogs/error_dialog.dart';
+import 'package:medique/models/medicine.dart';
+import 'package:medique/models/prescription.dart';
+import 'package:medique/services/prescription_services.dart';
+import 'package:medique/widgets/custom_button/general_button.dart';
+import 'package:medique/widgets/custom_dropdown.dart';
+import '../../core/constants/color_constants.dart';
+import '../../core/helpers/prescription_helpers.dart';
+import '../../models/patient.dart';
+import '../../widgets/text_fields/custom_text_field.dart';
 
-class PrescribeMedicine extends StatefulWidget {
+class PrescribeMedicineScreen extends StatefulWidget {
   final Patient patient;
-  const PrescribeMedicine({super.key, required this.patient});
+  const PrescribeMedicineScreen({super.key, required this.patient});
 
   @override
-  State<PrescribeMedicine> createState() => _PrescribeMedicineState();
+  State<PrescribeMedicineScreen> createState() => _PrescribeMedicineScreenState();
 }
 
-class _PrescribeMedicineState extends State<PrescribeMedicine> {
-  List<Map<String, String>> medicines = [];
+class _PrescribeMedicineScreenState extends State<PrescribeMedicineScreen> {
+  List<Medicine> medicines = [];
   List<String> dosageUnits = ['mg', 'g', 'ml', 'units'];
   String selectedDosageUnit = 'mg';
   List<String> frequencies = ['Once daily', 'Twice Daily', '3 times a day', ' 4 times a day' ];
@@ -39,34 +32,17 @@ class _PrescribeMedicineState extends State<PrescribeMedicine> {
   final TextEditingController _notesController = TextEditingController();
   final user = FirebaseAuth.instance.currentUser;
 
-  Future<List<String>> _getMedicationSuggestions(String query) async {
-    try {
-      final response = await http.get(Uri.parse('https://api.fda.gov/drug/drugsfda.json?search=$query'));
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-        if (data.containsKey('results')) {
-          final List<dynamic> results = data['results'];
-          return results
-              .where((item) => item['openfda'] != null && item['openfda'].containsKey('brand_name'))
-              .map((item) => item['openfda']['brand_name'][0].toString())
-              .toList();
-        }
-      }
-    } catch (e) {
-      print('Error fetching medication suggestions: $e');
-    }
-    return [];
-  }
-
 
   void _addMedicine() {
     setState(() {
-      medicines.add({
-        'name': _medicationController.text,
-        'dosage': "${_dosageController.text} $selectedDosageUnit",
-        'frequency': selectedFrequency,
-        'duration': "${_durationController.text} days",
-      });
+      medicines.add(
+        Medicine(
+          name: _medicationController.text,
+          dosage: "${_dosageController.text} $selectedDosageUnit",
+          frequency: selectedFrequency,
+          duration: "${_durationController.text} days",
+        )
+      );
       _medicationController.clear();
       _dosageController.clear();
       _durationController.clear();
@@ -80,10 +56,11 @@ class _PrescribeMedicineState extends State<PrescribeMedicine> {
     return Scaffold(
       backgroundColor: Pallete.primaryColor,
       appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0.0,
         backgroundColor: Pallete.primaryColor,
         centerTitle: true,
-        title: const Text('Prescribe Medicine'),
+        title: const Text('Prescribe Medicine', style: TextStyle(color: Colors.white),),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(100),
           child: Container(
@@ -114,7 +91,13 @@ class _PrescribeMedicineState extends State<PrescribeMedicine> {
                           child: child,
                         ),
                         suggestionsCallback: (pattern) async {
-                          return await _getMedicationSuggestions(pattern);
+                          final response = await PrescriptionServices.getMedicationSuggestions(pattern);
+
+                          if(response.success){
+                            return response.data;
+                          }else{
+                            return [];
+                          }
                         },
                         itemBuilder: (context, suggestion) {
                           return ListTile(
@@ -137,16 +120,16 @@ class _PrescribeMedicineState extends State<PrescribeMedicine> {
             onSelected: (value) {
               switch (value) {
                 case 0:
-                  Helpers.temporaryNavigator(context, const AskMediGuideScreen());
+                  //Helpers.temporaryNavigator(context, const AskMediGuideScreen());
                   break;
                 case 1:
                 // Perform action for option 1
-                  Helpers.temporaryNavigator(context, const XrayScanner());
+                  //Helpers.temporaryNavigator(context, const XrayScanner());
                   break;
 
                 case 2:
                 // Perform action for option 1
-                  Helpers.temporaryNavigator(context, const SymptomChecker());
+                  //Helpers.temporaryNavigator(context, const SymptomChecker());
                   break;
               }
             },
@@ -177,7 +160,7 @@ class _PrescribeMedicineState extends State<PrescribeMedicine> {
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            CustomDropdownWidget(
+            CustomDropDown(
               items: frequencies,
               selectedValue: selectedFrequency,
               onChanged: (value) {
@@ -185,6 +168,8 @@ class _PrescribeMedicineState extends State<PrescribeMedicine> {
                   selectedFrequency = value!;
                 });
               },
+              isEnabled: true,
+              prefixIcon: Icons.numbers,
             ),
             
             const SizedBox(height: 10),
@@ -202,7 +187,8 @@ class _PrescribeMedicineState extends State<PrescribeMedicine> {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: CustomDropdownWidget(
+                  child: CustomDropDown(
+                    isEnabled: true,
                     items: dosageUnits,
                     selectedValue: selectedDosageUnit,
                     onChanged: (value) {
@@ -229,16 +215,21 @@ class _PrescribeMedicineState extends State<PrescribeMedicine> {
               padding: const EdgeInsets.symmetric(
                 horizontal: 60
               ),
-              child: CustomButton(
+              child: GeneralButton(
                 onTap: _addMedicine,
-                btnColor: Pallete.primaryColor,
+                btnColor: Colors.white,
                 height: 40,
                 width: 60,
+                boxBorder: Border.all(
+                  color: Pallete.primaryColor
+                ),
                 borderRadius: 10,
                 child: const Text(
                   'Add Medicine',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Pallete.primaryColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14
                   ),
                 ),
               ),
@@ -248,7 +239,7 @@ class _PrescribeMedicineState extends State<PrescribeMedicine> {
             const SizedBox(height: 20),
             const Text(
               'Added Medicines',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             ...medicines.map((medicine) {
               return Dismissible(
@@ -266,16 +257,22 @@ class _PrescribeMedicineState extends State<PrescribeMedicine> {
                 onDismissed: (direction) {
                   medicines.remove(medicine);
                 },
-                child: ListTile(
-                  title: Text(
-                    medicine['name']!,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Pallete.primaryColor
+                child: Card(
+                  child: ListTile(
+                    title: Text(
+                      medicine.name,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Pallete.primaryColor
+                      ),
                     ),
-                  ),
-                  subtitle: Text(
-                      'Dosage: ${medicine['dosage']} - Frequency: ${medicine['frequency']} - Duration: ${medicine['duration']}'
+                    subtitle: Text(
+                        'Dosage: ${medicine.dosage}\nFrequency: ${medicine.frequency}\nDuration: ${medicine.duration}',
+                      style: const TextStyle(
+                        fontSize: 12
+                      ),
+                    ),
                   ),
                 ),
               );
@@ -284,26 +281,26 @@ class _PrescribeMedicineState extends State<PrescribeMedicine> {
             const SizedBox(height: 20),
             const Text(
               'Patient Notes',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
             TextField(
               controller: _notesController,
               keyboardType: TextInputType.multiline,
               maxLines: null,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Additional Notes',
-                border: const OutlineInputBorder(),
-                labelStyle: GoogleFonts.poppins(
+                border: OutlineInputBorder(),
+                labelStyle: TextStyle(
                   color: Colors.grey,
                   fontSize: 12,
                 ),
-                prefixIcon: const Icon(Icons.notes),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                prefixIcon: Icon(Icons.notes),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
-              style: GoogleFonts.poppins(
+              style: const TextStyle(
                   fontSize: 12,
                   color: Pallete.primaryColor
               ),
@@ -314,17 +311,27 @@ class _PrescribeMedicineState extends State<PrescribeMedicine> {
       bottomNavigationBar: Container(
         color: Colors.white,
         padding: const EdgeInsets.all(16),
-        child: CustomButton(
+        child: GeneralButton(
           btnColor: Pallete.primaryColor,
           borderRadius: 10,
           width: MediaQuery.sizeOf(context).width,
           onTap: (){
-            validateAndSubmitForm();
+            final prescription = Prescription(
+              nurseEmail: user!.email!,
+              medicines: medicines,
+              notes: _notesController.text,
+              patientEmail: widget.patient.personalDetails!.email!,
+              prescriptionDate: DateTime.now().toString(),
+              prescriptionId: '00'
+            );
+
+            PrescriptionHelpers.validateAndSubmitForm(prescription: prescription, dosage: _dosageController.text, duration: _durationController.text, medication: _medicationController.text);
           },
           child: const Text(
             'Prescribe Medicine',
             style: TextStyle(
               fontWeight: FontWeight.bold,
+              fontSize: 14,
               color: Colors.white
             ),
           ),
@@ -333,55 +340,4 @@ class _PrescribeMedicineState extends State<PrescribeMedicine> {
     );
   }
 
-
-  void showErrorDialog(String errorMessage) {
-    showDialog(
-        context: context,
-        builder: (context) => ErrorDialog(
-          errorMessage: errorMessage,
-        )
-    );
-  }
-
-  void validateAndSubmitForm() async {
-    if (_dosageController.text.isEmpty && medicines.isEmpty) {
-      showErrorDialog('Please input Dosage.');
-      return;
-    }
-
-    if (_durationController.text.isEmpty && medicines.isEmpty) {
-      showErrorDialog('Please enter Duration');
-      return;
-    }
-
-    if (_medicationController.text.length < 8 && medicines.isEmpty) {
-      showErrorDialog('Please input medication');
-      return;
-    }
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return const CustomLoader(message: 'Prescribing');
-      }
-    );
-
-    await PrescriptionServices.sendPrescription(
-        patientEmail: widget.patient.personalDetails!.email!,
-        doctorEmail: user!.email!,
-        medicines: medicines,
-        notes: _notesController.text
-    ).then((status){
-      if(status == 200 || status == 201) {
-        Helpers.back(context);
-        Helpers.back(context);
-        ScaffoldMessenger.of(context).showSnackBar(MySnackBars.prescriptionSnackBar);
-      }else{
-        Helpers.back(context);
-        showErrorDialog('Unknown Error Please Try again');
-      }
-    });
-
-  }
 }

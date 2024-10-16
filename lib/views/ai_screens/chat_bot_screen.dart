@@ -1,0 +1,184 @@
+import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dash_chat_2/dash_chat_2.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:logger/logger.dart';
+import 'package:http/http.dart' as http;
+import '../../../models/chat.dart';
+import '../../../models/message.dart';
+import '../../../models/participants.dart';
+import '../../core/constants/color_constants.dart';
+import '../../global/global.dart';
+import '../../services/chat_services.dart';
+
+class ChatBotScreen extends StatefulWidget {
+  final String disease;
+  const ChatBotScreen({super.key, required this.disease});
+
+  @override
+  State<ChatBotScreen> createState() => _ChatBotScreenState();
+}
+
+class _ChatBotScreenState extends State<ChatBotScreen> {
+  ChatUser? currentUser, otherUser;
+  final user = FirebaseAuth.instance.currentUser;
+  final Logger _logger = Logger();
+
+  @override
+  void initState() {
+    super.initState();
+    currentUser = ChatUser(id: user!.uid, firstName: user!.displayName);
+
+    otherUser = ChatUser(
+        id: 'MediGuideAIAssistantChatBot001',
+        firstName: 'MediGuide Assistant',
+        profileImage: 'https://cdn-icons-png.flaticon.com/128/3558/3558866.png'
+    );
+
+    checkIfChatExists();
+  }
+
+  void checkIfChatExists() async {
+    final chatExist =
+    await ChatServices.checkIfChatExists(currentUser!.id, otherUser!.id);
+
+    if (!chatExist) {
+      await ChatServices.createNewChat(
+          participant1: Participant(
+              id: user!.uid,
+              displayName: user!.displayName ?? '',
+              email: user!.email ?? '',
+              profilePicture: user!.photoURL ?? '',
+              fcmToken: ''),
+          participant2: Participant(
+              id: otherUser!.id,
+              displayName: otherUser!.firstName!,
+              email: 'MediGuideAssistant@mediguide.com',
+              profilePicture: 'https://cdn-icons-png.flaticon.com/128/3558/3558866.png',
+              fcmToken: ''));
+
+      _logger.i('Chat Created Successfully');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Pallete.primaryColor,
+          leadingWidth: 80,
+          leading: GestureDetector(
+            onTap: () => Get.back(),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Icon(Icons.arrow_back, color: Colors.white,),
+                CircleAvatar(
+                  backgroundColor: Colors.white,
+                  backgroundImage: NetworkImage(
+                    otherUser!.profileImage.toString().isNotEmpty
+                        ? otherUser!.profileImage.toString()
+                        : 'https://cdn-icons-png.flaticon.com/128/3177/3177440.png',
+                  ),
+                )
+              ],
+            ),
+          ),
+          title: const Text(
+            'MediGuide Assistant',
+            style: TextStyle(
+                color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+          ),
+        ),
+        body: _buildChatUI());
+  }
+
+  Widget _buildChatUI() {
+    return StreamBuilder<DocumentSnapshot<Chat>>(
+        stream: ChatServices.getChatMessages(
+            uid1: currentUser!.id, uid2: otherUser!.id),
+        builder: (context, snapshot) {
+          Chat? chat = snapshot.data?.data();
+          List<ChatMessage> messages = [];
+
+          if (chat != null && chat.messages != null) {
+            messages = _generateChatMessagesList(chat.messages);
+          }
+          return DashChat(
+              messageOptions: const MessageOptions(
+                  showOtherUsersAvatar: true, showTime: true),
+              currentUser: currentUser!,
+              messages: messages,
+              onSend: _sendMessage);
+        });
+  }
+
+  Future<void> _sendMessage(ChatMessage chatMessage) async {
+    Message message = Message(
+        senderID: currentUser!.id,
+        content: chatMessage.text,
+        messageType: MessageType.text,
+        sentAt: Timestamp.fromDate(chatMessage.createdAt));
+
+    await ChatServices.sendChatMessage(
+        uid1: currentUser!.id, uid2: otherUser!.id, message: message);
+    await sendPrompt(chatMessage.text);
+  }
+
+  Future<void> sendPrompt(String prompt) async {
+    var url = Uri.parse('http://192.168.43.229:8000/get_response');
+
+    try {
+      var body = {'query': prompt}; // Form data
+      var response = await http.post(url, body: body);
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+
+        Message message = Message(
+            senderID: otherUser!.id,
+            content:
+            '${data["answer"]}\n\n\nContext: ${data["source_document"]}\n\nSource Document: ${data["doc"]}',
+            messageType: MessageType.text,
+            sentAt: Timestamp.fromDate(DateTime.now()));
+
+        await ChatServices.sendChatMessage(
+            uid1: otherUser!.id, uid2: currentUser!.id, message: message);
+
+        _logger.i('Response returned successfully');
+      } else {
+        _logger.e("Failed: ${response.statusCode}");
+      }
+    } catch (e) {
+      _logger.e(e);
+    }
+  }
+
+  List<ChatMessage> _generateChatMessagesList(List<Message> messages) {
+    List<ChatMessage> chatMessages = messages.map((message) {
+      if (message.messageType == MessageType.image) {
+        return ChatMessage(
+            user:
+            message.senderID == currentUser!.id ? currentUser! : otherUser!,
+            medias: [
+              ChatMedia(
+                  url: message.content!, fileName: '', type: MediaType.image)
+            ],
+            createdAt: message.sentAt!.toDate());
+      } else {
+        return ChatMessage(
+            user:
+            message.senderID == currentUser!.id ? currentUser! : otherUser!,
+            text: message.content!,
+            createdAt: message.sentAt!.toDate());
+      }
+    }).toList();
+
+    chatMessages.sort((a, b) {
+      return b.createdAt.compareTo(a.createdAt);
+    });
+    return chatMessages;
+  }
+}

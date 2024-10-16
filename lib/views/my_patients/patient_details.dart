@@ -25,7 +25,8 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
       backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
         backgroundColor: Pallete.primaryColor.withOpacity(0.9),
-        elevation: 4,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
         shadowColor: Colors.grey.withOpacity(0.2),
         title: const Text('Patient Details', style: TextStyle(color: Colors.white)),
         centerTitle: true,
@@ -38,17 +39,16 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                   Get.toNamed(RoutesHelper.addVitalsScreen, arguments: [user, widget.patient]);
                   break;
                 case 1:
-                //Helpers.temporaryNavigator(context, PrescribeMedicine(patient: widget.patient,));
+                  Get.toNamed(RoutesHelper.prescribeMedicineScreen, arguments: widget.patient);
                   break;
                 case 2:
-                  Get.toNamed(RoutesHelper.askMediguideScreen);
+                  Get.toNamed(RoutesHelper.symptomCheckerScreen);
                   break;
                 case 3:
                   Get.toNamed(RoutesHelper.viewPatientVitalsHistory, arguments: widget.patient);
                   break;
                 case 4:
-                // Perform action for option 1
-                //Helpers.temporaryNavigator(context, PatientMedicalHistory(patient: widget.patient,));
+                  Get.toNamed(RoutesHelper.viewPatientMedicalHistory, arguments: widget.patient);
                   break;
               }
             },
@@ -96,7 +96,6 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
       body: SingleChildScrollView(
         child: Stack(
           children: [
-            // Background gradient
             Container(
               height: MediaQuery.of(context).size.height,
               decoration: BoxDecoration(
@@ -109,6 +108,9 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
             ),
             Column(
               children: [
+                const SizedBox(
+                  height: 80,
+                ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                   decoration: BoxDecoration(
@@ -129,6 +131,34 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                     children: [
                       Row(
                         children: [
+                          Text(
+                            "${widget.patient.personalDetails!.firstName} ${widget.patient.personalDetails!.lastName}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                              color: Colors.black87,
+                            ),
+                          ).animate().slideY(delay: 300.ms, begin: -0.2),
+                          const SizedBox(height: 12),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Text(
+                            '${AddPatientHelper.calculateAge(widget.patient.personalDetails!.dateOfBirth!)} years',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey.shade600,
+                            ),
+                          ).animate().fadeIn(delay: 500.ms),
+                        ],
+                      ),
+
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
@@ -146,25 +176,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                           ).animate().fadeIn(duration: const Duration(milliseconds: 1500)),
                         ],
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        "${widget.patient.personalDetails!.firstName} ${widget.patient.personalDetails!.lastName}",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                          color: Colors.black87,
-                        ),
-                      ).animate().slideY(delay: 300.ms, begin: -0.2),
-                      const SizedBox(height: 12),
-                      Text(
-                        '${AddPatientHelper.calculateAge(widget.patient.personalDetails!.dateOfBirth!)} years',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey.shade600,
-                        ),
-                      ).animate().fadeIn(delay: 500.ms),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),
@@ -206,7 +218,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
               right: 16,
               top: 80,
               child: CircleAvatar(
-                radius: 100,
+                radius: 80,
                 backgroundImage: NetworkImage(
                   widget.patient.personalDetails!.displayPicture ?? NetworkImageConstants.logo,
                 ),
