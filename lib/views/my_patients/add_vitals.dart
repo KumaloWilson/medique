@@ -153,6 +153,7 @@ class _AddVitalsScreenState extends State<AddVitalsScreen> {
           fillColor: Colors.grey[200],
           filled: true
         ),
+        
         const SizedBox(height: 15),
         CustomTextField(
           controller: _heightController,

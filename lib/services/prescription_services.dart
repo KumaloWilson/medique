@@ -16,8 +16,7 @@ class PrescriptionServices{
       final prescriptionData = prescription.toJson();
       await _firestore.collection('prescriptions').add(prescriptionData);
 
-      return APIResponse(
-          success: true, data: '', message: 'Prescriptions added successfully');
+      return APIResponse(success: true, data: '', message: 'Prescriptions added successfully');
     } catch (e) {
       return APIResponse(success: false, message: e.toString());
     }
@@ -55,51 +54,14 @@ class PrescriptionServices{
     );
   }
 
-  // Stream to listen for real-time prescription updates and classify them into Ongoing and History
-  static Stream<APIResponse<Map<String, List<Prescription>>>> getPrescriptionsStream({required String patientEmail}) {
+
+  // Stream patient prescriptions based on patient email
+  static Stream<List<Prescription>> streamPatientPrescriptions({required String patientEmail}) {
     return _firestore
         .collection('prescriptions')
         .where('patientEmail', isEqualTo: patientEmail)
         .snapshots()
-        .map((snapshot) {
-      List<Prescription> ongoingPrescriptions = [];
-      List<Prescription> historyPrescriptions = [];
-
-      for (var doc in snapshot.docs) {
-        Prescription prescription =
-        Prescription.fromJson(doc.data() as Map<String, dynamic>);
-
-        // Check for each medicine if it's ongoing or history
-        bool isOngoing = false;
-        for (var medicine in prescription.medicines) {
-          DateTime prescriptionEndDate = DateTime.parse(prescription.prescriptionDate)
-              .add(Duration(days: int.parse(medicine.duration)));
-
-          if (prescriptionEndDate.isAfter(DateTime.now())) {
-            isOngoing = true;
-            break;
-          }
-        }
-
-        if (isOngoing) {
-          ongoingPrescriptions.add(prescription);
-        } else {
-          historyPrescriptions.add(prescription);
-        }
-      }
-
-      return APIResponse(
-        success: true,
-        message: 'Prescriptions retrieved successfully',
-        data: {
-          'ongoing': ongoingPrescriptions,
-          'history': historyPrescriptions,
-        },
-      );
-    }).handleError((error) {
-      return APIResponse(success: false, message: 'Error retrieving prescriptions: $error');
-    });
+        .map((snapshot) => snapshot.docs.map((doc) => Prescription.fromJson(doc.data())).toList());
   }
-
 }
 

@@ -14,6 +14,7 @@ class MedicineCard extends StatelessWidget {
   Widget build(BuildContext context) {
     List<IconData> icons = [
       LineIcons.pills,
+
       FontAwesomeIcons.pills,
     ];
 

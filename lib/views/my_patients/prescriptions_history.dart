@@ -78,17 +78,17 @@ class _PatientMedicalHistoryState extends State<PatientMedicalHistory>
         decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(topRight: Radius.circular(30))),
-        child: StreamBuilder<APIResponse<Map<String, List<Prescription>>>>(
-          stream: PrescriptionServices.getPrescriptionsStream(patientEmail:  widget.patient.personalDetails!.email!),
+        child: StreamBuilder<List<Prescription>>(
+          stream: PrescriptionServices.streamPatientPrescriptions(patientEmail:  widget.patient.personalDetails!.email!),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.success) {
+            } else if (snapshot.hasError || !snapshot.hasData) {
               return const Center(child: Text('Error loading prescriptions.'));
             }
 
-            final ongoingPrescriptions = snapshot.data!.data!['ongoing']!;
-            final historyPrescriptions = snapshot.data!.data!['history']!;
+            final ongoingPrescriptions = snapshot.data!;
+            final historyPrescriptions = snapshot.data!;
 
             return TabBarView(
               controller: _tabController,

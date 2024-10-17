@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:medique/models/patient.dart';
 import 'package:medique/models/vitals.dart';
 import 'package:get/get.dart';
-
-import '../../core/utils/routes.dart';
 import '../../services/vital_services.dart';
 import '../../widgets/circular_loader/circular_loader.dart';
 import '../../widgets/snackbar/custom_snackbar.dart';
@@ -32,6 +30,53 @@ class VitalsHelper {
       return;
     }
 
+    // Validate blood pressure format (should be "systolic/diastolic")
+    if (!RegExp(r"^\d{2,3}/\d{2,3}$").hasMatch(bloodPressure)) {
+      CustomSnackBar.showErrorSnackbar(message: 'Invalid blood pressure format.');
+      return;
+    }
+
+    // Validate heart rate (normal range: 60-100 bpm)
+    final int? hr = int.tryParse(heartRate);
+    if (hr == null || hr < 40 || hr > 180) {
+      CustomSnackBar.showErrorSnackbar(message: 'Invalid heart rate. It must be between 40 and 180 bpm.');
+      return;
+    }
+
+    // Validate height (convert to meters, normal range: 0.5m to 2.5m)
+    final double? heightInMeters = double.tryParse(height) != null ? double.parse(height) / 100 : null;
+    if (heightInMeters == null || heightInMeters < 0.5 || heightInMeters > 2.5) {
+      CustomSnackBar.showErrorSnackbar(message: 'Invalid height. It must be between 50cm and 250cm.');
+      return;
+    }
+
+    // Validate weight (normal range: 3kg to 300kg)
+    final double? weightInKg = double.tryParse(weight);
+    if (weightInKg == null || weightInKg < 3 || weightInKg > 300) {
+      CustomSnackBar.showErrorSnackbar(message: 'Invalid weight. It must be between 3kg and 300kg.');
+      return;
+    }
+
+    // Validate oxygen saturation (normal range: 95-100%)
+    final int? oxygen = int.tryParse(oxygenSaturation);
+    if (oxygen == null || oxygen < 70 || oxygen > 100) {
+      CustomSnackBar.showErrorSnackbar(message: 'Invalid oxygen saturation. It must be between 70% and 100%.');
+      return;
+    }
+
+    // Validate respiratory rate (normal range: 12-20 breaths per minute)
+    final int? rr = int.tryParse(respiratoryRate);
+    if (rr == null || rr < 8 || rr > 40) {
+      CustomSnackBar.showErrorSnackbar(message: 'Invalid respiratory rate. It must be between 8 and 40 breaths per minute.');
+      return;
+    }
+
+    // Validate temperature (normal range: 36.0°C to 42.0°C)
+    final double? temp = double.tryParse(temperature);
+    if (temp == null || temp < 34.0 || temp > 43.0) {
+      CustomSnackBar.showErrorSnackbar(message: 'Invalid temperature. It must be between 34°C and 43°C.');
+      return;
+    }
 
     Get.dialog(
       const CustomLoader(
@@ -40,10 +85,7 @@ class VitalsHelper {
       barrierDismissible: false,
     );
 
-
-    final double heightInMeters = double.parse(height) / 100;
-    final double weightInKg = double.parse(weight);
-    final double bmi = weightInKg / (heightInMeters * heightInMeters);
+    final double bmi = weightInKg! / (heightInMeters! * heightInMeters);
 
     final vitals = Vitals(
       email: patient.personalDetails!.email!,
@@ -51,14 +93,15 @@ class VitalsHelper {
       patientId: patient.personalDetails!.patientId!,
       id: _autoGenID(),
       bloodPressure: bloodPressure,
-      heartRate: int.parse(heartRate),
-      oxygenSaturation: int.parse(oxygenSaturation),
-      respiratoryRate: int.parse(respiratoryRate),
-      temperature: double.parse(temperature),
+      heartRate: hr,
+      oxygenSaturation: oxygen!,
+      respiratoryRate: rr!,
+      temperature: temp!,
       weight: weightInKg,
       height: heightInMeters,
       bmi: bmi,
     );
+
     // Analyze vitals to generate comments
     final comments = analyzeVitals(
       bloodPressure: bloodPressure,
@@ -70,19 +113,18 @@ class VitalsHelper {
       height: height,
     );
 
-    await VitalsServices.addVitalsToFirebase(vitals: vitals ).then((response) {
+    await VitalsServices.addVitalsToFirebase(vitals: vitals).then((response) {
       if (!response.success) {
         if (!Get.isSnackbarOpen) Get.back();
         CustomSnackBar.showErrorSnackbar(message: response.message ?? 'Something went wrong');
       } else {
         if (Get.isDialogOpen!) Get.back();
-
         CustomSnackBar.showSuccessSnackbar(message: response.message!,);
-
         showCommentsDialog(comments);
       }
     });
   }
+
 
   static String _autoGenID() {
     return FirebaseFirestore.instance.collection('vitals').doc().id;

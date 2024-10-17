@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medique/core/constants/color_constants.dart';
 import 'package:medique/models/prescription.dart';
 import 'medicine_card.dart';
 
@@ -32,7 +33,7 @@ class PrescriptionCard extends StatelessWidget {
             children: [
 
               Text(
-                '${prescription.prescriptionDate}',
+                prescription.prescriptionDate,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
 
@@ -75,8 +76,8 @@ class PrescriptionCard extends StatelessWidget {
           ),
 
 
-          const Divider(),
-          const Text(
+          const Divider(color: Pallete.primaryColor,),
+          if(prescription.notes.isNotEmpty)const Text(
             'Notes',
             style: TextStyle(
                 fontWeight: FontWeight.bold
@@ -90,7 +91,8 @@ class PrescriptionCard extends StatelessWidget {
           Text(
             prescription.notes,
             style: const TextStyle(
-                color: Colors.black
+              color: Colors.black,
+              fontSize: 12
             ),
           ),
         ],
