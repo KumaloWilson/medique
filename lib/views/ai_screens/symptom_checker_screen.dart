@@ -91,7 +91,7 @@ class _SymptomCheckerScreenState extends State<SymptomCheckerScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: _isLoading
             ? const SizedBox.shrink() // No buttons when loading
-            : _response != null
+            : _response == null
             ? GeneralButton(
           borderRadius: 10,
           btnColor: Pallete.primaryColor,
