@@ -12,6 +12,7 @@ import '../../../models/participants.dart';
 import '../../core/constants/color_constants.dart';
 import '../../global/global.dart';
 import '../../services/chat_services.dart';
+import '../../widgets/snackbar/custom_snackbar.dart';
 
 class ChatBotScreen extends StatefulWidget {
   final String disease;
@@ -25,10 +26,13 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
   ChatUser? currentUser, otherUser;
   final user = FirebaseAuth.instance.currentUser;
   final Logger _logger = Logger();
+  bool isLoadingResponse = false;
 
   @override
   void initState() {
     super.initState();
+
+
     currentUser = ChatUser(id: user!.uid, firstName: user!.displayName);
 
     otherUser = ChatUser(
@@ -41,8 +45,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
   }
 
   void checkIfChatExists() async {
-    final chatExist =
-    await ChatServices.checkIfChatExists(currentUser!.id, otherUser!.id);
+    final chatExist = await ChatServices.checkIfChatExists(currentUser!.id, otherUser!.id);
 
     if (!chatExist) {
       await ChatServices.createNewChat(
@@ -106,16 +109,26 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
           if (chat != null && chat.messages != null) {
             messages = _generateChatMessagesList(chat.messages);
           }
+
+          if (isLoadingResponse) {
+            messages.insert(0, _loadingBubble());
+          }
+
           return DashChat(
               messageOptions: const MessageOptions(
                   showOtherUsersAvatar: true, showTime: true),
               currentUser: currentUser!,
               messages: messages,
-              onSend: _sendMessage);
+              onSend: _sendMessage
+          );
         });
   }
 
   Future<void> _sendMessage(ChatMessage chatMessage) async {
+    setState(() {
+      isLoadingResponse = true; // Show loading bubble when sending a message
+    });
+
     Message message = Message(
         senderID: currentUser!.id,
         content: chatMessage.text,
@@ -124,37 +137,68 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
 
     await ChatServices.sendChatMessage(
         uid1: currentUser!.id, uid2: otherUser!.id, message: message);
+
     await sendPrompt(chatMessage.text);
   }
 
   Future<void> sendPrompt(String prompt) async {
-    var url = Uri.parse('http://192.168.43.229:8000/get_response');
+    var url = Uri.parse('https://a1d7-102-128-76-118.ngrok-free.app/get_response');
 
     try {
-      var body = {'query': prompt}; // Form data
-      var response = await http.post(url, body: body);
+      // Prepare form data
+      var body = {'query': prompt};
+
+      // Send the POST request with application/x-www-form-urlencoded headers
+      var response = await http.post(
+        url,
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: body,
+      );
 
       if (response.statusCode == 200) {
+        // Decode the JSON response
         var data = jsonDecode(response.body);
 
-        Message message = Message(
+        // Check if the required keys are available
+        if (data.containsKey("answer") && data.containsKey("source_document") && data.containsKey("doc")) {
+          // Construct the message
+          Message message = Message(
             senderID: otherUser!.id,
-            content:
-            '${data["answer"]}\n\n\nContext: ${data["source_document"]}\n\nSource Document: ${data["doc"]}',
+            content: '${data["answer"]}\n\n\nContext: ${data["source_document"]}\n\nSource Document: ${data["doc"]}',
             messageType: MessageType.text,
-            sentAt: Timestamp.fromDate(DateTime.now()));
+            sentAt: Timestamp.fromDate(DateTime.now()),
+          );
 
-        await ChatServices.sendChatMessage(
-            uid1: otherUser!.id, uid2: currentUser!.id, message: message);
+          // Send the message using your chat service
+          await ChatServices.sendChatMessage(
+            uid1: otherUser!.id,
+            uid2: currentUser!.id,
+            message: message,
+          );
 
-        _logger.i('Response returned successfully');
+          _logger.i('Response returned successfully');
+        } else {
+          // Handle unexpected structure in the response
+          _logger.e("Unexpected response structure: $data");
+          CustomSnackBar.showErrorSnackbar(message: "Unexpected response from the server.");
+        }
       } else {
+        // Handle non-200 responses
         _logger.e("Failed: ${response.statusCode}");
+        CustomSnackBar.showErrorSnackbar(message: "Failed to get response. Status code: ${response.statusCode}");
       }
     } catch (e) {
+      // Catch and log any errors
       _logger.e(e);
+      CustomSnackBar.showErrorSnackbar(message: 'An error occurred: $e');
+    } finally {
+      // Hide loading bubble after response is received or in case of error
+      setState(() {
+        isLoadingResponse = false;
+      });
     }
   }
+
 
   List<ChatMessage> _generateChatMessagesList(List<Message> messages) {
     List<ChatMessage> chatMessages = messages.map((message) {
@@ -180,5 +224,13 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
       return b.createdAt.compareTo(a.createdAt);
     });
     return chatMessages;
+  }
+
+  ChatMessage _loadingBubble() {
+    return ChatMessage(
+      user: otherUser!,
+      createdAt: DateTime.now(),
+      text: '...',
+    );
   }
 }

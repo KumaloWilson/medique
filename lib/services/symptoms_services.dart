@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:medique/core/utils/api_response.dart';
 
+import '../core/constants/url_config.dart';
+
 class SymptomsServices {
   static Future<APIResponse<String>> submitSymptoms({required String inputText}) async {
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:5000/generate'), // Update this URL as needed
+        Uri.parse('${UrlConfig.symptomCheckerUrl}/generate'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'input_text': inputText}),
       );

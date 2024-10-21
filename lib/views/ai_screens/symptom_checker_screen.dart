@@ -3,9 +3,10 @@ import 'package:get/get.dart';
 import 'package:medique/core/utils/api_response.dart';
 import 'package:medique/core/utils/routes.dart';
 import 'package:medique/widgets/custom_button/general_button.dart';
-
 import '../../core/constants/color_constants.dart';
 import '../../services/symptoms_services.dart';
+import '../../widgets/circular_loader/circular_loader.dart';
+import '../../widgets/snackbar/custom_snackbar.dart';
 
 class SymptomCheckerScreen extends StatefulWidget {
   const SymptomCheckerScreen({super.key});
@@ -18,6 +19,51 @@ class _SymptomCheckerScreenState extends State<SymptomCheckerScreen> {
   final TextEditingController _symptomsController = TextEditingController();
   String? _response;
   bool _isLoading = false;
+
+  Future<void> _submitSymptoms() async {
+    if (_symptomsController.text.isEmpty) {
+      CustomSnackBar.showErrorSnackbar(message: 'Please enter your symptoms.');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Show loader dialog
+    Get.dialog(
+      const CustomLoader(message: 'Submitting symptoms'),
+      barrierDismissible: false,
+    );
+
+    final APIResponse<String> response = await SymptomsServices.submitSymptoms(
+      inputText: _symptomsController.text,
+    );
+
+    // Hide the loader
+    Get.back();
+
+    if (response.success && response.data != null) {
+      final pipeIndex = response.data!.indexOf('|');
+      if (pipeIndex != -1) {
+        // Extract everything after the pipe
+        _response = response.data!.substring(pipeIndex + 1).trim();
+        CustomSnackBar.showSuccessSnackbar(
+            message: 'Symptoms submitted successfully.');
+        setState(() {});
+      } else {
+        // If no pipe found, allow user to retry
+        CustomSnackBar.showErrorSnackbar(
+            message: 'Invalid response. Please try again.');
+      }
+    } else {
+      CustomSnackBar.showErrorSnackbar(message: response.message ?? 'An error occurred. Please try again.');
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,29 +83,26 @@ class _SymptomCheckerScreenState extends State<SymptomCheckerScreen> {
           children: [
             _buildSymptomsInput(),
             const SizedBox(height: 20),
+            _buildResponseText(),
           ],
         ),
       ),
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 8
-        ),
-        child: _response != null
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: _isLoading
+            ? const SizedBox.shrink() // No buttons when loading
+            : _response != null
             ? GeneralButton(
           borderRadius: 10,
           btnColor: Pallete.primaryColor,
           width: 200,
-          onTap: (){
-
-          },
+          onTap: _submitSymptoms,
           child: const Text(
             'Submit Symptoms',
             style: TextStyle(
                 color: Colors.white,
                 fontSize: 14,
-                fontWeight: FontWeight.bold
-            ),
+                fontWeight: FontWeight.bold),
           ),
         )
             : Row(
@@ -69,42 +112,39 @@ class _SymptomCheckerScreenState extends State<SymptomCheckerScreen> {
                 borderRadius: 10,
                 btnColor: Pallete.primaryColor,
                 width: 200,
-                onTap: (){
-
-                },
+                onTap: _submitSymptoms, // Retry button
                 child: const Text(
                   'Recheck',
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
-                      fontWeight: FontWeight.bold
-                  ),
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),
-            const SizedBox(
-              width: 16,
-            ),
+            const SizedBox(width: 16),
             Expanded(
               child: GeneralButton(
                 borderRadius: 10,
                 btnColor: Pallete.primaryColor,
                 width: 200,
-                onTap: (){
-                  Get.toNamed(RoutesHelper.chatBotScreen, arguments: _response ?? '');
+                onTap: () {
+                  Get.toNamed(
+                    RoutesHelper.chatBotScreen,
+                    arguments: _response ?? '',
+                  );
                 },
                 child: const Text(
                   'Next',
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
-                      fontWeight: FontWeight.bold
-                  ),
+                      fontWeight: FontWeight.bold),
                 ),
               ),
-            )
+            ),
           ],
-        )
+        ),
       ),
     );
   }
@@ -122,8 +162,6 @@ class _SymptomCheckerScreenState extends State<SymptomCheckerScreen> {
     );
   }
 
-
-
   Widget _buildResponseText() {
     return _response != null
         ? Text(
@@ -133,21 +171,4 @@ class _SymptomCheckerScreenState extends State<SymptomCheckerScreen> {
     )
         : const SizedBox.shrink();
   }
-
-  Future<void> _submitSymptoms() async {
-    setState(() {
-      _isLoading = true;
-      _response = null;
-    });
-
-    final APIResponse<String> apiResponse = await SymptomsServices.submitSymptoms(
-      inputText: _symptomsController.text,
-    );
-
-    setState(() {
-      _isLoading = false;
-      _response = apiResponse.success ? apiResponse.data : apiResponse.message;
-    });
-  }
 }
-
