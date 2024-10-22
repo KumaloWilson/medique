@@ -146,7 +146,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
 
   Future<void> sendPrompt(String prompt) async {
     var url =
-        Uri.parse('https://c91d-185-177-125-212.ngrok-free.app/get_response');
+        Uri.parse('https://3277-102-128-79-105.ngrok-free.app/get_response');
 
     try {
       // Prepare form data
