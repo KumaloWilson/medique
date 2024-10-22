@@ -116,7 +116,7 @@ class RoutesHelper {
     ),
     GetPage(name: tbScanner, page: () => const XrayScanner()),
 
-    GetPage(name: symptomCheckerScreen, page: () => SymptomCheckerScreen()),
+    GetPage(name: symptomCheckerScreen, page: () => const SymptomCheckerScreen()),
     GetPage(
         name: chatBotScreen,
         page: () {

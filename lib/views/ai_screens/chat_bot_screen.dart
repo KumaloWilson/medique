@@ -32,20 +32,20 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
   void initState() {
     super.initState();
 
-
     currentUser = ChatUser(id: user!.uid, firstName: user!.displayName);
 
     otherUser = ChatUser(
         id: 'MediGuideAIAssistantChatBot001',
         firstName: 'MediGuide Assistant',
-        profileImage: 'https://cdn-icons-png.flaticon.com/128/3558/3558866.png'
-    );
+        profileImage:
+            'https://cdn-icons-png.flaticon.com/128/3558/3558866.png');
 
     checkIfChatExists();
   }
 
   void checkIfChatExists() async {
-    final chatExist = await ChatServices.checkIfChatExists(currentUser!.id, otherUser!.id);
+    final chatExist =
+        await ChatServices.checkIfChatExists(currentUser!.id, otherUser!.id);
 
     if (!chatExist) {
       await ChatServices.createNewChat(
@@ -59,7 +59,8 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
               id: otherUser!.id,
               displayName: otherUser!.firstName!,
               email: 'MediGuideAssistant@mediguide.com',
-              profilePicture: 'https://cdn-icons-png.flaticon.com/128/3558/3558866.png',
+              profilePicture:
+                  'https://cdn-icons-png.flaticon.com/128/3558/3558866.png',
               fcmToken: ''));
 
       _logger.i('Chat Created Successfully');
@@ -77,7 +78,10 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                const Icon(Icons.arrow_back, color: Colors.white,),
+                const Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                ),
                 CircleAvatar(
                   backgroundColor: Colors.white,
                   backgroundImage: NetworkImage(
@@ -119,8 +123,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
                   showOtherUsersAvatar: true, showTime: true),
               currentUser: currentUser!,
               messages: messages,
-              onSend: _sendMessage
-          );
+              onSend: _sendMessage);
         });
   }
 
@@ -142,7 +145,8 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
   }
 
   Future<void> sendPrompt(String prompt) async {
-    var url = Uri.parse('https://a1d7-102-128-76-118.ngrok-free.app/get_response');
+    var url =
+        Uri.parse('https://c91d-185-177-125-212.ngrok-free.app/get_response');
 
     try {
       // Prepare form data
@@ -160,11 +164,14 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
         var data = jsonDecode(response.body);
 
         // Check if the required keys are available
-        if (data.containsKey("answer") && data.containsKey("source_document") && data.containsKey("doc")) {
+        if (data.containsKey("answer") &&
+            data.containsKey("source_document") &&
+            data.containsKey("doc")) {
           // Construct the message
           Message message = Message(
             senderID: otherUser!.id,
-            content: '${data["answer"]}\n\n\nContext: ${data["source_document"]}\n\nSource Document: ${data["doc"]}',
+            content:
+                '${data["answer"]}\n\n\nContext: ${data["source_document"]}\n\nSource Document: ${data["doc"]}',
             messageType: MessageType.text,
             sentAt: Timestamp.fromDate(DateTime.now()),
           );
@@ -180,12 +187,15 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
         } else {
           // Handle unexpected structure in the response
           _logger.e("Unexpected response structure: $data");
-          CustomSnackBar.showErrorSnackbar(message: "Unexpected response from the server.");
+          CustomSnackBar.showErrorSnackbar(
+              message: "Unexpected response from the server.");
         }
       } else {
         // Handle non-200 responses
         _logger.e("Failed: ${response.statusCode}");
-        CustomSnackBar.showErrorSnackbar(message: "Failed to get response. Status code: ${response.statusCode}");
+        CustomSnackBar.showErrorSnackbar(
+            message:
+                "Failed to get response. Status code: ${response.statusCode}");
       }
     } catch (e) {
       // Catch and log any errors
@@ -199,13 +209,12 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
     }
   }
 
-
   List<ChatMessage> _generateChatMessagesList(List<Message> messages) {
     List<ChatMessage> chatMessages = messages.map((message) {
       if (message.messageType == MessageType.image) {
         return ChatMessage(
             user:
-            message.senderID == currentUser!.id ? currentUser! : otherUser!,
+                message.senderID == currentUser!.id ? currentUser! : otherUser!,
             medias: [
               ChatMedia(
                   url: message.content!, fileName: '', type: MediaType.image)
@@ -214,7 +223,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
       } else {
         return ChatMessage(
             user:
-            message.senderID == currentUser!.id ? currentUser! : otherUser!,
+                message.senderID == currentUser!.id ? currentUser! : otherUser!,
             text: message.content!,
             createdAt: message.sentAt!.toDate());
       }

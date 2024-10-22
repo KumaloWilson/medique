@@ -57,7 +57,8 @@ class _SymptomCheckerScreenState extends State<SymptomCheckerScreen> {
             message: 'Invalid response. Please try again.');
       }
     } else {
-      CustomSnackBar.showErrorSnackbar(message: response.message ?? 'An error occurred. Please try again.');
+      CustomSnackBar.showErrorSnackbar(
+          message: response.message ?? 'An error occurred. Please try again.');
     }
 
     setState(() {
@@ -92,59 +93,59 @@ class _SymptomCheckerScreenState extends State<SymptomCheckerScreen> {
         child: _isLoading
             ? const SizedBox.shrink() // No buttons when loading
             : _response == null
-            ? GeneralButton(
-          borderRadius: 10,
-          btnColor: Pallete.primaryColor,
-          width: 200,
-          onTap: _submitSymptoms,
-          child: const Text(
-            'Submit Symptoms',
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold),
-          ),
-        )
-            : Row(
-          children: [
-            Expanded(
-              child: GeneralButton(
-                borderRadius: 10,
-                btnColor: Pallete.primaryColor,
-                width: 200,
-                onTap: _submitSymptoms, // Retry button
-                child: const Text(
-                  'Recheck',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: GeneralButton(
-                borderRadius: 10,
-                btnColor: Pallete.primaryColor,
-                width: 200,
-                onTap: () {
-                  Get.toNamed(
-                    RoutesHelper.chatBotScreen,
-                    arguments: _response ?? '',
-                  );
-                },
-                child: const Text(
-                  'Next',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ],
-        ),
+                ? GeneralButton(
+                    borderRadius: 10,
+                    btnColor: Pallete.primaryColor,
+                    width: 200,
+                    onTap: _submitSymptoms,
+                    child: const Text(
+                      'Submit Symptoms',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  )
+                : Row(
+                    children: [
+                      Expanded(
+                        child: GeneralButton(
+                          borderRadius: 10,
+                          btnColor: Pallete.primaryColor,
+                          width: 200,
+                          onTap: _submitSymptoms, // Retry button
+                          child: const Text(
+                            'Recheck',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: GeneralButton(
+                          borderRadius: 10,
+                          btnColor: Pallete.primaryColor,
+                          width: 200,
+                          onTap: () {
+                            Get.toNamed(
+                              RoutesHelper.chatBotScreen,
+                              arguments: _response ?? '',
+                            );
+                          },
+                          child: const Text(
+                            'Next',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
       ),
     );
   }
@@ -165,10 +166,10 @@ class _SymptomCheckerScreenState extends State<SymptomCheckerScreen> {
   Widget _buildResponseText() {
     return _response != null
         ? Text(
-      _response!,
-      style: const TextStyle(fontSize: 16, color: Colors.black54),
-      textAlign: TextAlign.center,
-    )
+            _response!,
+            style: const TextStyle(fontSize: 16, color: Colors.black54),
+            textAlign: TextAlign.center,
+          )
         : const SizedBox.shrink();
   }
 }
