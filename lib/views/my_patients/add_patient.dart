@@ -72,7 +72,7 @@ class _AddPatientState extends State<AddPatient> {
               items: const ['Mr', 'Mrs', 'Ms'],
               prefixIcon: Icons.title,
               isEnabled: true,
-              selectedValue: 'Mr',
+              selectedValue: _selectedTitle ?? 'Mr',
               onChanged: (value) {
                 setState(() {
                   _selectedTitle = value;
@@ -153,7 +153,7 @@ class _AddPatientState extends State<AddPatient> {
               items: const ['Single', 'Married', 'Divorced', 'Widowed'],
               prefixIcon: Icons.title,
               isEnabled: true,
-              selectedValue: 'Single',
+              selectedValue: _selectedMaritalStatus ?? 'Single',
               onChanged: (value) {
                 setState(() {
                   _selectedMaritalStatus = value;
@@ -165,7 +165,7 @@ class _AddPatientState extends State<AddPatient> {
               items: const ['Male', 'Female', 'Other'],
               prefixIcon: Icons.transgender,
               isEnabled: true,
-              selectedValue: 'Male',
+              selectedValue: _selectedGender ?? 'Male',
               onChanged: (value) {
                 setState(() {
                   _selectedGender = value;

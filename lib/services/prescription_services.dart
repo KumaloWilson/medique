@@ -60,8 +60,10 @@ class PrescriptionServices{
     return _firestore
         .collection('prescriptions')
         .where('patientEmail', isEqualTo: patientEmail)
+        .orderBy('prescriptionDate', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs.map((doc) => Prescription.fromJson(doc.data())).toList());
   }
+
 }
 

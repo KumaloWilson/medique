@@ -165,11 +165,18 @@ class _SymptomCheckerScreenState extends State<SymptomCheckerScreen> {
 
   Widget _buildResponseText() {
     return _response != null
-        ? Text(
-            _response!,
-            style: const TextStyle(fontSize: 16, color: Colors.black54),
-            textAlign: TextAlign.center,
-          )
+        ? Container(
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.redAccent,
+        borderRadius: BorderRadius.circular(10)
+      ),
+          child: Text(
+              _response!,
+              style: const TextStyle(fontSize: 16, color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+        )
         : const SizedBox.shrink();
   }
 }

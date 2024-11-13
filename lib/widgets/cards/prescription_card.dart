@@ -9,6 +9,20 @@ class PrescriptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    List<String> dateAndTime = prescription.prescriptionDate.toString().split(' ');
+
+
+    String date = dateAndTime[0];
+    String time = dateAndTime[1];
+
+    // Split the time to get hours and minutes
+    List<String> timeParts = time.split(':');
+    String hours = timeParts[0];
+    String minutes = timeParts[1];
+
+
+
     return Container(
       clipBehavior: Clip.hardEdge,
       margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
@@ -32,13 +46,31 @@ class PrescriptionCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
 
-              Text(
-                prescription.prescriptionDate,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
+              Row(
+                children: [
+                  Text(
+                    "$hours:$minutes",
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Pallete.primaryColor
+                    ),
+                  ),
 
-                ),
+                  SizedBox(
+                    width: 16,
+                  ),
 
+                  Text(
+                    date,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: Pallete.primaryColor
+                    ),
+
+                  ),
+                ],
               ),
               PopupMenuButton<int>(
                 onSelected: (value) {
@@ -64,7 +96,7 @@ class PrescriptionCard extends StatelessWidget {
           const Divider(),
 
           SizedBox(
-            height: 170,
+            height: 190,
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: prescription.medicines.map((e) => MedicineCard(medicine: e)).toList(),

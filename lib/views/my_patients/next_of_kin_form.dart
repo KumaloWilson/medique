@@ -72,7 +72,7 @@ class _AddNextOfKinState extends State<AddNextOfKin> {
               items: const ['Mr', 'Mrs', 'Ms'],
               prefixIcon: Icons.title,
               isEnabled: true,
-              selectedValue: 'Mr',
+              selectedValue: _selectedTitle ?? 'Mr',
               onChanged: (value) {
                 setState(() {
                   _selectedTitle = value;
@@ -149,7 +149,7 @@ class _AddNextOfKinState extends State<AddNextOfKin> {
               ],
               prefixIcon: Icons.family_restroom,
               isEnabled: true,
-              selectedValue: 'Father',
+              selectedValue: _selectedRelationship ?? 'Father',
               onChanged: (value) {
                 setState(() {
                   _selectedRelationship = value;
@@ -162,7 +162,7 @@ class _AddNextOfKinState extends State<AddNextOfKin> {
               items: const ['Male', 'Female', 'Other'],
               prefixIcon: Icons.transgender,
               isEnabled: true,
-              selectedValue: 'Male',
+              selectedValue: _selectedGender ?? 'Male',
               onChanged: (value) {
                 setState(() {
                   _selectedGender = value;

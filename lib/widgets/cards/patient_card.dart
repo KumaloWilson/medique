@@ -48,7 +48,7 @@ class PatientCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                   image: DecorationImage(
                       image: NetworkImage(
-                         patient.personalDetails!.displayPicture ?? ''
+                         patient.personalDetails!.displayPicture ?? 'https://cdn-icons-png.flaticon.com/128/2302/2302715.png'
                       )
                   )
               ),

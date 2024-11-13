@@ -63,7 +63,7 @@ class _UserDrawerState extends State<UserDrawer> {
                         children: [
                           Text(
                             widget.user.displayName ?? 'username',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 14,
                               color: Pallete.primaryColor,
                               fontWeight: FontWeight.bold,
@@ -71,7 +71,7 @@ class _UserDrawerState extends State<UserDrawer> {
                           ),
                           Text(
                             widget.user.email ?? 'example@email.com',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
                               color: Pallete.primaryColor,
                             ),
@@ -83,19 +83,19 @@ class _UserDrawerState extends State<UserDrawer> {
                 ),
               ),
             ),
-            ListTile(
+            const ListTile(
               leading: Icon(
                 Icons.home,
                 color: Pallete.primaryColor,
               ),
-              title: const Text(
+              title: Text(
                 'Home',
                 style: TextStyle(fontSize: 16),
               ),
-              trailing: const Icon(Icons.navigate_next),
+              trailing: Icon(Icons.navigate_next),
             ),
             ListTile(
-              leading: Icon(
+              leading: const Icon(
                 Icons.person,
                 color: Pallete.primaryColor,
               ),
@@ -110,7 +110,7 @@ class _UserDrawerState extends State<UserDrawer> {
               },
             ),
             ListTile(
-              leading: Icon(
+              leading: const Icon(
                 Icons.auto_graph,
                 color: Pallete.primaryColor,
               ),

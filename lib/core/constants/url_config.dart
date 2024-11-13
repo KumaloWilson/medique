@@ -1,3 +1,4 @@
 class UrlConfig {
-  static const symptomCheckerUrl = "https://0595-77-246-52-53.ngrok-free.app";
+  static const symptomCheckerUrl = "http://192.168.43.229:5000";
+  static const ragUrl = "http://192.168.43.229:8000";
 }

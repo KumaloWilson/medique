@@ -220,7 +220,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
               child: CircleAvatar(
                 radius: 80,
                 backgroundImage: NetworkImage(
-                  widget.patient.personalDetails!.displayPicture ?? NetworkImageConstants.logo,
+                  widget.patient.personalDetails!.displayPicture ?? 'https://cdn-icons-png.flaticon.com/128/2302/2302715.png',
                 ),
                 backgroundColor: Colors.transparent,
               ),

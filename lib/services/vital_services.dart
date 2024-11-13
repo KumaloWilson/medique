@@ -21,8 +21,17 @@ class VitalsServices {
   }
 
   static Stream<List<Vitals>> streamAllVitals({required String patientEmail}) {
-    return _firestore.collection('vitals').where('patientEmail', isEqualTo: patientEmail).snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) => Vitals.fromJson(doc.data())).toList();
+    return _firestore
+        .collection('vitals')
+        .where('patientEmail', isEqualTo: patientEmail)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs
+          .map((doc) => Vitals.fromJson(doc.data()))
+          .toList()
+          .reversed
+          .toList();
     });
   }
+
 }

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
+import 'package:medique/core/constants/url_config.dart';
 import '../../../models/chat.dart';
 import '../../../models/message.dart';
 import '../../../models/participants.dart';
@@ -145,8 +146,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
   }
 
   Future<void> sendPrompt(String prompt) async {
-    var url =
-        Uri.parse('https://3277-102-128-79-105.ngrok-free.app/get_response');
+    var url = Uri.parse('${UrlConfig.ragUrl}/get_response');
 
     try {
       // Prepare form data

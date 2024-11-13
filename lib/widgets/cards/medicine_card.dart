@@ -83,14 +83,15 @@ class MedicineCard extends StatelessWidget {
             height: 12,
           ),
           Container(
+            height: 30,
             width: MediaQuery.sizeOf(context).width,
-            padding: const EdgeInsets.all(2),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             decoration: BoxDecoration(
                 color: Pallete.primaryColor,
                 borderRadius: BorderRadius.circular(20)
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   medicine.frequency,

@@ -26,7 +26,6 @@ class _AddVitalsScreenState extends State<AddVitalsScreen> {
   final TextEditingController _temperatureController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _heightController = TextEditingController();
-  final TextEditingController _bmiController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {

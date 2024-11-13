@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:medique/core/utils/routes.dart';
 import '../../core/constants/local_image_constants.dart';
-import '../auth/auth_handler.dart';
 
 
 class SplashScreen extends StatefulWidget {

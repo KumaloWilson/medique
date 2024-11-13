@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:medique/core/constants/local_image_constants.dart';
 import 'package:medique/core/utils/routes.dart';
@@ -7,7 +8,6 @@ import '../../../animations/leftbounce_animation.dart';
 import '../../../animations/rightbounce_animation.dart';
 import '../../../core/constants/color_constants.dart';
 import '../../../widgets/drawer/doctor_drawer.dart';
-import 'ai_hub/ai_hub.dart';
 
 class NurseHomeScreen extends StatefulWidget {
   const NurseHomeScreen({super.key});
@@ -58,9 +58,12 @@ class _NurseHomeScreenState extends State<NurseHomeScreen> {
               decoration: const BoxDecoration(
                   shape: BoxShape.circle, color: Colors.white),
               child: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                    'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?q=80&w=1727&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
-              ),
+                backgroundColor: Colors.white,
+                  child: Icon(
+                    FontAwesomeIcons.userNurse,
+                    color: Pallete.primaryColor,
+                  ),
+                ),
             ),
           ),
           bottom: PreferredSize(

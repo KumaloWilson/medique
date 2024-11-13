@@ -229,7 +229,10 @@ class VitalsHelper {
         ),
         actions: [
           TextButton(
-            onPressed: () => Get.back(),
+            onPressed: (){
+              Get.back();
+              Get.back();
+            },
             child: const Text('OK'),
           ),
         ],

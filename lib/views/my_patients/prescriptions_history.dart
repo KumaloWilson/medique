@@ -35,7 +35,7 @@ class _PatientMedicalHistoryState extends State<PatientMedicalHistory>
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
-          'Prescriptions',
+          'Medical History',
           style: TextStyle(color: Colors.white),
         ),
         bottom: PreferredSize(
@@ -52,7 +52,8 @@ class _PatientMedicalHistoryState extends State<PatientMedicalHistory>
                   TabBar(
                     controller: _tabController,
                     physics: const BouncingScrollPhysics(),
-                    isScrollable: true,
+                    isScrollable: false,
+                    tabAlignment: TabAlignment.fill,
                     unselectedLabelStyle: const TextStyle(
                       color: Colors.black,
                       fontSize: 14,
