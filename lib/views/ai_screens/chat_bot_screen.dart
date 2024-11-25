@@ -95,7 +95,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
             ),
           ),
           title: const Text(
-            'MediGuide Assistant',
+            'MedAid Assistant',
             style: TextStyle(
                 color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
           ),

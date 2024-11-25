@@ -234,16 +234,13 @@ class _NurseHomeScreenState extends State<NurseHomeScreen> {
               const SizedBox(
                 width: 12,
               ),
+
               Expanded(
-                child: BounceFromLeftAnimation(
+                child: BounceFromRightAnimation(
                   delay: 1.5,
                   child: GestureDetector(
                     onTap: () {
-                      // Navigator.of(context).push(
-                      //   MaterialPageRoute(
-                      //     builder: (context) => const PatientsScreen(),
-                      //   ),
-                      // );
+                      Get.toNamed(RoutesHelper.chatBotScreen, arguments: '');
                     },
                     child: Container(
                       padding: const EdgeInsets.all(12),
@@ -253,11 +250,11 @@ class _NurseHomeScreenState extends State<NurseHomeScreen> {
                       child: Column(
                         children: [
                           Image.asset(
-                            LocalImageConstants.patientBed,
+                            LocalImageConstants.chatBot,
                             height: 120,
                           ),
                           const Text(
-                            'Staff',
+                            'Ask MedAid',
                             style: TextStyle(
                               color: Pallete.primaryColor,
                               fontWeight: FontWeight.bold,
@@ -265,71 +262,6 @@ class _NurseHomeScreenState extends State<NurseHomeScreen> {
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 12,
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: BounceFromRightAnimation(
-                  delay: 2,
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Pallete.primaryColor)),
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            LocalImageConstants.labTest,
-                            height: 120,
-                          ),
-                          const Text(
-                            'Lab Tests',
-                            style: TextStyle(
-                              color: Pallete.primaryColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                width: 12,
-              ),
-              Expanded(
-                child: BounceFromLeftAnimation(
-                  delay: 2,
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Pallete.primaryColor)),
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          LocalImageConstants.patientChart,
-                          height: 120,
-                        ),
-                        const Text(
-                          'Patient Charts',
-                          style: TextStyle(
-                            color: Pallete.primaryColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
                     ),
                   ),
                 ),

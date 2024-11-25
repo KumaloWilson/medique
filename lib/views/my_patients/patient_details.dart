@@ -71,7 +71,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
                 value: 2,
                 child: ListTile(
                   leading: Icon(Icons.help_outline, color: Pallete.primaryColor),
-                  title: Text('Ask MediGuide'),
+                  title: Text('Ask MedAid'),
                 ),
               ),
               const PopupMenuItem(
